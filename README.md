@@ -11,17 +11,17 @@ you can apply it for imaging data taken with other high-speed camera
 (Tomo-e Gozen etc.).
 
 ### Procedures
-1. Primary reduction (dark subtraction, flat-field correction)
+1. Calibration (dark subtraction, flat-field correction)
 
 
-2. stack fits to 2-d 
+2. Stack fits
 mean, median etc.
 
 
-3. split fits to 2-d 
+3. Split fits 
 (only for photometry using `Moving Object Photometry (movphot)`)
 
-4. common ID search
+4. Common ID search
 
 ## Installing (in preparation)
 ```
@@ -30,35 +30,39 @@ pip install tdr
 
 
 ## Usage
-Here 3-bands observation by Seimei/TriCCS is assumed.
+Here g-band data taken with Seimei/TriCCS is condidered.
 All bands data could be analyzed by the same way.
 
 Fits data taken with TriCCS have format like `TRCS00005180.fits`.
 
-First 4 characters `TRCS` means TriCCS,
+First 4 characters `TRCS` means the instrument *TriCCS*,
 next 7 characters are the exposure ID and 
-the last 1 character is band identical number (0:g-band, 1:r-band, 2:i/z-band).
+the last 1 character is band identical number (`0` for g-band, `1` for r-band and `2` for i/z-band).
 
-After each reduction stage, a prefix is added to the fits name.
+After each reduction stage, a prefix is added to the filename.
 History can be checked in fitsheader as well.
 
 
-### 1. Primary reduction
+### 1. Calibration
 Here, consider the situation:
-exposure time of object frame is 10 s,
-exposure time of flat frame is 1 s 
+exposure time for object frame is 10 s,
+exposure time for flat frame is 1 s 
 and 1s, 10s dark frames are obtained (all in g-band).
+
+The obtained fits are 
+
 1. object `TRCS00000010.fits` (10 s)
 2. dark for flat `TRCS00000020.fits` (1s)
 3. dark for object `TRCS00000030.fits` (10s)
 4. flat `TRCS00000040.fits` (1s)
 .
 
-Dark subtraction and flat fielding are
-done as following.
+The, dark subtraction and flat fielding are done as following.
+
 
 First, create master dark frame.
-The master dark has prefix `d` like `dTRCS00000020.fits`,
+
+The master dark has prefix `d` like `dTRCS00000020.fits`.
 
 ```
 [usage]
@@ -72,8 +76,9 @@ makedark TRCS00000020.fits
 makedark TRCS00000030.fits
 ```
 
-Next, create master flat frame using master dark for flat frame.
-The master flat has prefix `f` like `fTRCS00000040.fits`
+Next, create master normalized flat frame using master dark for flat frame.
+
+The master flat has prefix `f` like `fTRCS00000040.fits`.
 
 ```
 [usage]
@@ -82,11 +87,12 @@ makeflat (3-d flat) (2-d master dark)
 
 [example]
 # Create master flat
-makeflat TRCS00000040.fits dTRCS0000002.fits
+makeflat TRCS00000040.fits dTRCS00000020.fits
 ```
 
-Finally, reduce object frame using both master dark and master flat frames.
-The reduced object frame has prefix `r` like `rTRCS00000010.fits`
+Finally, reduce object frame using both master dark and flat frames. 
+
+The reduced object frame has prefix `r` like `rTRCS00000010.fits`.
 
 ```
 [usage]
@@ -98,10 +104,9 @@ reduce (3-d object) (2-d master dark) (2-d master flat)
 reduce TRCS00000010.fits dTRCS00000020.fits fTRCS00000040.fits
 ```
 
-### 2. stack fits to 2d
-Output fits has format like 
-`meanTRCS00005180.fits` (mean) and  
-`medianTRCS00005180.fits` (median).
+### 2. Stacking
+Output fits has format like `meanrTRCS00000010.fits` (mean) and
+`medianrTRCS00000010.fits` (median).
 
 ```
 [usage]
@@ -118,7 +123,7 @@ stackfits rTRCS00000010.fits  --median
 ```
 
 
-### 3. split fits to 2d
+### 3. Splitting
 If you are going to use `Moving Object Photometry (movphot)` for photometry,
 3-d fits cube should be splitted to multiple 2-d fits.
 
@@ -138,7 +143,7 @@ rTRCS00000010c0002.fits
 rTRCS00000010c0003.fits
 ``` 
 
-### 4. common ID search
+### 4. Common ID search
 If wcs pasting failed for some fits,
 it is necessary to extract common ID fits.
 
