@@ -56,41 +56,38 @@ like below.
 3. dark for object `TRCS00000030.fits` (10s)
 4. flat `TRCS00000040.fits` (1s)
 
-The, dark subtraction and flat field-correction are done as follows.
+Dark subtraction and flat field-correction are done as follows.
 
 
-First, create master dark frame.
-
-The master dark has prefix `d` like `dTRCS00000020.fits`.
+First, create master dark frame, which has prefix `d` like `dTRCS00000020.fits`.
 
 The maximum count frame is not used for stacking,
-which leads to avoid cosmic ray or fast moving object contaminations.
+which leads to avoid cosmic ray or fast moving object contamination.
 ```
 [usage]
 # Create master dark
-makedark (3-d dark)
+makedark.py (3-d dark)
 
 [example]
 # Create master dark for flat
-makedark TRCS00000020.fits
+makedark.py TRCS00000020.fits
 # Create master dark for object
-makedark TRCS00000030.fits
+makedark.py TRCS00000030.fits
 ```
 
 Next, create master normalized flat frame using master dark for flat frame.
-
-The master flat has prefix `f` like `fTRCS00000040.fits`.
+, which has prefix `f` like `fTRCS00000040.fits`.
 
 The maximum count frame is not used for stacking as well.
 
 ```
 [usage]
 # Create master flat
-makeflat --flat (3-d flat) --dark (2-d master dark)
+makeflat.py --flat (3-d flat) --dark (2-d master dark)
 
 [example]
 # Create master flat
-makeflat --flat TRCS00000040.fits --dark dTRCS00000020.fits
+makeflat.py --flat TRCS00000040.fits --dark dTRCS00000020.fits
 ```
 
 Finally, reduce object frame using both master dark and flat frames. 
@@ -100,58 +97,65 @@ The reduced object frame has prefix `r` like `rTRCS00000010.fits`.
 ```
 [usage]
 # Do dark subtraction and flat-field correction
-reduce --obj (3-d object) --dark (2-d master dark) --flat (2-d master flat)
+reduce.py --obj (3-d object) --dark (2-d master dark) --flat (2-d master flat)
 
 [example]
 # Do dark subtraction and flat-field correction
-reduce --obj TRCS00000010.fits --dark dTRCS00000020.fits --flat fTRCS00000040.fits
+reduce.py --obj TRCS00000010.fits --dark dTRCS00000020.fits --flat fTRCS00000040.fits
 ```
 
 ### 2. Stacking
-Output fits has format like `meanrTRCS00000010.fits` (mean) and
+Output fits have format like 
+`maxrTRCS00000010.fits` (max),
+`minrTRCS00000010.fits` (min),
+`meanrTRCS00000010.fits` (mean) and
 `medianrTRCS00000010.fits` (median).
 
 ```
 [usage]
+# Maximum stacking
+stackfits.py (3-d reduced fits) max
+# Minimum stacking
+stackfits.py (3-d reduced fits) min
 # Mean stacking
-stackfits (3-d reduced fits) --mean
+stackfits.py (3-d reduced fits) mean
 # Median stacking
-stackfits (3-d reduced fits) --median
+stackfits.py (3-d reduced fits) median
 
 [example]
+# Maximum stacking
+stackfits.py rTRCS00000010.fits  max
+# Minimum stacking
+stackfits.py rTRCS00000010.fits  min
 # Mean stacking
-stackfits rTRCS00000010.fits  --mean
+stackfits.py rTRCS00000010.fits  mean
 # Median stacking
-stackfits rTRCS00000010.fits  --median
+stackfits.py rTRCS00000010.fits  median
 ```
 
-
-### 3. Splitting
+### 3. Splitting [in preparation]
 If you are going to use `Moving Object Photometry (movphot)` for photometry,
 3-d fits cube should be splitted to multiple 2-d fits.
 
 ```
 [usage]
-# Cut and create multiple 2-d fits
-cut3dfits (3-d fits)
+# Mask pixels and split fits to multiple 2-d fits
+mask_split.py (3-d fits)
 
 [example]
-# Cut and create multiple 2-d fits
-cut3dfits rTRCS00000010.fits
+# Mask pixels and split fits to multiple 2-d fits
+mask_split.py rTRCS00000010.fits
 ```
 Output fits are as follows (when number of frame is 3).
-```
-rTRCS00000010c0001.fits
-rTRCS00000010c0002.fits
-rTRCS00000010c0003.fits
-``` 
+The masked and splitted frames hav suffix `ms` like `rTRCS00000010ms0001.fits`.
 
-### 4. Common ID search
+
+### 4. Common ID search [in preparation]
 If wcs pasting failed for some fits,
 it is necessary to extract common ID fits.
 
 ```
-[usage]
+[example]
 # Extract common fits ID from g,r,i bands list (glist.txt, rlist.txt, ilist.txt)
 cat glist.txt | awk '{print substr($0,17,3)}' > gID.txt
 cat rlist.txt | awk '{print substr($0,17,3)}' > rID.txt
