@@ -56,7 +56,7 @@ if __name__ == "__main__":
     f"[makedark] created from {os.path.basename(args.fits)}")
 
   if args.out is None:
-    out = f"d{args.fits}"
+    out = f"d{os.path.join.basename(args.fits)}"
   else:
     out = args.out
 

@@ -11,7 +11,7 @@ import os
 if __name__ == "__main__":
   parser = ap(description="Do standard reduction for an object frame")
   parser.add_argument(
-    "fits", type=str,
+    "--obj", type=str, required=True,
     help="a raw fits image")
   parser.add_argument(
     "--dark", type=str, required=True,
@@ -28,7 +28,7 @@ if __name__ == "__main__":
   args = parser.parse_args()
 
   # Read object frame
-  hdu_obj = fits.open(args.fits)
+  hdu_obj = fits.open(args.obj)
   hdr = hdu_obj[0].header
 
   # Read dark frame
@@ -58,7 +58,7 @@ if __name__ == "__main__":
     f"[reduce] created from (flat) {os.path.basename(args.flat)}")
 
   if args.out is None:
-    out = f"r{args.fits}"
+    out = f"r{os.path.join.basename(args.obj)}"
   else:
     out = args.out
 

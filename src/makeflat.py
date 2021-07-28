@@ -69,7 +69,7 @@ if __name__ == "__main__":
 
 
   if args.out is None:
-    out = f"f{args.fits}"
+    out = f"f{os.path.join.basename(args.flat)}"
   else:
     out = args.out
 
