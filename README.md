@@ -6,7 +6,7 @@
 
 ## Overview
 Data reduction of data taken with Seimei/TriCCS could be done in this repository.  
-Though being optimized for Seimei/TriCCS, 
+Though optimized for Seimei/TriCCS, 
 you can apply it for imaging data taken with other high-speed camera
 (Tomo-e Gozen etc.).
 
@@ -14,11 +14,10 @@ you can apply it for imaging data taken with other high-speed camera
 1. Calibration (dark subtraction, flat-field correction)
 
 
-2. Stack fits
-mean, median etc.
+2. Stacking fits by mean, median etc.
 
 
-3. Split fits 
+3. Splitting fits
 (only for photometry using `Moving Object Photometry (movphot)`)
 
 4. Common ID search
@@ -30,14 +29,16 @@ pip install tdr
 
 
 ## Usage
-Here g-band data taken with Seimei/TriCCS is condidered.
+Here g-band data taken with Seimei/TriCCS is considered.
 All bands data could be analyzed by the same way.
 
 Fits data taken with TriCCS have format like `TRCS00005180.fits`.
 
 First 4 characters `TRCS` means the instrument *TriCCS*,
-next 7 characters are the exposure ID and 
-the last 1 character is band identical number (`0` for g-band, `1` for r-band and `2` for i/z-band).
+next 7 characters are the exposure ID 
+
+and the last 1 character is band identical number 
+(`0` for g-band, `1` for r-band and `2` for i/z-band).
 
 After each reduction stage, a prefix is added to the filename.
 History can be checked in fitsheader as well.
@@ -46,24 +47,24 @@ History can be checked in fitsheader as well.
 ### 1. Calibration
 Here, consider the situation:
 exposure time for object frame is 10 s,
-exposure time for flat frame is 1 s 
-and 1s, 10s dark frames are obtained (all in g-band).
-
-The obtained fits are 
+for flat frame is 1 s,
+and for dark frames are 1s and 10s (all in g-band) 
+like below.
 
 1. object `TRCS00000010.fits` (10 s)
 2. dark for flat `TRCS00000020.fits` (1s)
 3. dark for object `TRCS00000030.fits` (10s)
 4. flat `TRCS00000040.fits` (1s)
-.
 
-The, dark subtraction and flat fielding are done as following.
+The, dark subtraction and flat field-correction are done as follows.
 
 
 First, create master dark frame.
 
 The master dark has prefix `d` like `dTRCS00000020.fits`.
 
+The maximum count frame is not used for stacking,
+which leads to avoid cosmic ray or fast moving object contaminations.
 ```
 [usage]
 # Create master dark
@@ -79,6 +80,8 @@ makedark TRCS00000030.fits
 Next, create master normalized flat frame using master dark for flat frame.
 
 The master flat has prefix `f` like `fTRCS00000040.fits`.
+
+The maximum count frame is not used for stacking as well.
 
 ```
 [usage]
