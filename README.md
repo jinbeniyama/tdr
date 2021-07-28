@@ -83,11 +83,11 @@ The master flat has prefix `f` like `fTRCS00000040.fits`.
 ```
 [usage]
 # Create master flat
-makeflat (3-d flat) (2-d master dark)
+makeflat --flat (3-d flat) --dark (2-d master dark)
 
 [example]
 # Create master flat
-makeflat TRCS00000040.fits dTRCS00000020.fits
+makeflat --flat TRCS00000040.fits --dark dTRCS00000020.fits
 ```
 
 Finally, reduce object frame using both master dark and flat frames. 
@@ -97,11 +97,11 @@ The reduced object frame has prefix `r` like `rTRCS00000010.fits`.
 ```
 [usage]
 # Do dark subtraction and flat-field correction
-reduce (3-d object) (2-d master dark) (2-d master flat)
+reduce --obj (3-d object) --dark (2-d master dark) --flat (2-d master flat)
 
 [example]
 # Do dark subtraction and flat-field correction
-reduce TRCS00000010.fits dTRCS00000020.fits fTRCS00000040.fits
+reduce --obj TRCS00000010.fits --dark dTRCS00000020.fits --flat fTRCS00000040.fits
 ```
 
 ### 2. Stacking
