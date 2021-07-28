@@ -3,9 +3,9 @@
 """ Make a master flat frame from a 3-d fits
 """
 from argparse import ArgumentParser as ap
-import astropy.io.fits as fits
-import numpy as np
 import os
+import numpy as np
+import astropy.io.fits as fits
 
 
 def chopped_mean(cube):

@@ -3,9 +3,9 @@
 """ Do standard reduction for an object frame.
 """
 from argparse import ArgumentParser as ap
-import astropy.io.fits as fits
-import numpy as np
 import os
+import numpy as np
+import astropy.io.fits as fits
 
 
 if __name__ == "__main__":

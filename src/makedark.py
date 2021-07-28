@@ -3,9 +3,9 @@
 """ Make a master dark frame from a 3-d fits
 """
 from argparse import ArgumentParser as ap
+import os
 import numpy as np
 import astropy.io.fits as fits
-import os
 
 
 def chopped_mean(cube):
