@@ -150,7 +150,7 @@ Output fits are as follows (when number of frame is 3).
 The masked and splitted frames hav suffix `ms` like `rTRCS00000010ms0001.fits`.
 
 
-### 4. Common ID search [in preparation]
+### 4. Common ID search
 If wcs pasting failed for some fits,
 it is necessary to extract common ID fits.
 
