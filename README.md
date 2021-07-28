@@ -6,13 +6,12 @@
 
 ## Overview
 Data reduction of data taken with Seimei/TriCCS could be done in this repository.  
-Though being optimized for Seimei/TriCCS data, 
+Though being optimized for Seimei/TriCCS, 
 you can apply it for imaging data taken with other high-speed camera
 (Tomo-e Gozen etc.).
 
 ### Procedures
-1. Primary reduction
-dark subtraction, flat fielding
+1. Primary reduction (dark subtraction, flat-field correction)
 
 
 2. stack fits to 2-d 
@@ -25,7 +24,8 @@ mean, median etc.
 4. common ID search
 
 ## Installing (in preparation)
-```pip install tdr
+```
+pip install tdr
 ```
 
 
@@ -90,11 +90,11 @@ The reduced object frame has prefix `r` like `rTRCS00000010.fits`
 
 ```
 [usage]
-# Do dark subtraction and flat fielding 
+# Do dark subtraction and flat-field correction
 reduce (3-d object) (2-d master dark) (2-d master flat)
 
 [example]
-# Do dark subtraction and flat fielding 
+# Do dark subtraction and flat-field correction
 reduce TRCS00000010.fits dTRCS00000020.fits fTRCS00000040.fits
 ```
 
