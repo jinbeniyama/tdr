@@ -18,7 +18,7 @@ you can apply it for imaging data taken with other high-speed cameras
 
 
 3. Splitting fits
-(only for photometry using `Moving Object Photometry (movphot)`[bitbucket](https://bitbucket.org/jibeni/movphot/src/master/))
+(only for photometry using `Moving Object Photometry (movphot)` ([bitbucket](https://bitbucket.org/jibeni/movphot/src/master/)) )
 
 4. Common ID search
 
