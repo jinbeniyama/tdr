@@ -18,7 +18,7 @@ you can apply it for imaging data taken with other high-speed cameras
 
 
 3. Splitting fits
-(only for photometry using `Moving Object Photometry (movphot)`)
+(only for photometry using `Moving Object Photometry (movphot)`[bitbucket](https://bitbucket.org/jibeni/movphot/src/master/))
 
 4. Common ID search
 
@@ -134,7 +134,7 @@ stackfits.py rTRCS00000010.fits  median
 ```
 
 ### 3. Splitting [in preparation]
-If you are going to use `Moving Object Photometry (movphot)` for photometry,
+If you are going to use `Moving Object Photometry (movphot)`[bitbucket](https://bitbucket.org/jibeni/movphot/src/master/) for photometry,
 3-d fits cube should be split into multiple 2-d fits.
 
 ```
