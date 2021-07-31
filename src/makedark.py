@@ -63,7 +63,7 @@ def main(args=None):
     f"[makedark] created from {os.path.basename(args.fits)}")
 
   if args.out is None:
-    out = f"d{os.path.join.basename(args.fits)}"
+    out = f"d{os.path.basename(args.fits)}"
   else:
     out = args.out
 
