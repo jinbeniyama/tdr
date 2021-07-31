@@ -40,7 +40,7 @@ if __name__ == "__main__":
                           "makeflat = tdr.makeflat:main",
                           "reduce = tdr.reduce:main",
                           "stackfits = tdr.stackfits:main",
-                          "commonIDsearch = tdr.commonIDserach:main",
+                          "commonIDsearch = tdr.commonIDsearch:main",
                           ]
     },
     description="TriCCS Data Reduction",
