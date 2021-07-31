@@ -18,19 +18,20 @@ you can apply it for imaging data taken with other high-speed cameras
 
 
 3. Splitting fits
-(only for photometry using `Moving Object Photometry (movphot)` ([bitbucket](https://bitbucket.org/jibeni/movphot/src/master/)) )
+(only for photometry using `Moving Object Photometry (movphot)` ([bitbucket](https://bitbucket.org/jin_beniyama/movphot/src/master/)) )
 
 4. Common ID search
 
-## Installing (in preparation)
-Install from PyPI
+## Installing
 ```
+# Install from PyPI
 pip install tdr
 ```
-
-Install with `setup.py`
+or
 ```
- install tdr
+# Install with `setup.py`
+git clone https://jin_beniyama@bitbucket.org/jin_beniyama/triccs-data-reduction.git
+python setup.py install
 ```
 
 
@@ -140,7 +141,7 @@ stackfits.py rTRCS00000010.fits  median
 ```
 
 ### 3. Splitting [in preparation]
-If you are going to use `Moving Object Photometry (movphot)`[(bitbucket)](https://bitbucket.org/jibeni/movphot/src/master/) for photometry,
+If you are going to use `Moving Object Photometry (movphot)`[(bitbucket)](https://bitbucket.org/jin_beniyama/movphot/src/master/) for photometry,
 3-d fits cube should be split into multiple 2-d fits.
 
 ```
