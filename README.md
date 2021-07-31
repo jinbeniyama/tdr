@@ -23,8 +23,14 @@ you can apply it for imaging data taken with other high-speed cameras
 4. Common ID search
 
 ## Installing (in preparation)
+Install from PyPI
 ```
 pip install tdr
+```
+
+Install with `setup.py`
+```
+ install tdr
 ```
 
 
