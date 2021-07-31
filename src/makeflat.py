@@ -76,7 +76,7 @@ def main(args=None):
 
 
   if args.out is None:
-    out = f"f{os.path.join.basename(args.flat)}"
+    out = f"f{os.path.basename(args.flat)}"
   else:
     out = args.out
 
