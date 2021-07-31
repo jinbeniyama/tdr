@@ -73,13 +73,13 @@ which leads to avoiding cosmic rays or fast-moving object contamination.
 ```
 [usage]
 # Create master dark
-makedark.py (3-d dark)
+makedark (3-d dark)
 
 [example]
 # Create master dark for flat
-makedark.py TRCS00000020.fits
+makedark TRCS00000020.fits
 # Create master dark for object
-makedark.py TRCS00000030.fits
+makedark TRCS00000030.fits
 ```
 
 Next, create a master normalized flat frame using master dark for a flat frame.
@@ -90,11 +90,11 @@ The maximum count frame is not used for stacking as well.
 ```
 [usage]
 # Create master flat
-makeflat.py --flat (3-d flat) --dark (2-d master dark)
+makeflat --flat (3-d flat) --dark (2-d master dark)
 
 [example]
 # Create master flat
-makeflat.py --flat TRCS00000040.fits --dark dTRCS00000020.fits
+makeflat --flat TRCS00000040.fits --dark dTRCS00000020.fits
 ```
 
 Finally, reduce an object frame using both master dark and flat frames. 
@@ -104,11 +104,11 @@ The reduced object frame has prefix `r` like `rTRCS00000010.fits`.
 ```
 [usage]
 # Do dark subtraction and flat-field correction
-reduce.py --obj (3-d object) --dark (2-d master dark) --flat (2-d master flat)
+reduce --obj (3-d object) --dark (2-d master dark) --flat (2-d master flat)
 
 [example]
 # Do dark subtraction and flat-field correction
-reduce.py --obj TRCS00000010.fits --dark dTRCS00000020.fits --flat fTRCS00000040.fits
+reduce --obj TRCS00000010.fits --dark dTRCS00000020.fits --flat fTRCS00000040.fits
 ```
 
 ### 2. Stacking
@@ -121,23 +121,23 @@ Output fits have format like
 ```
 [usage]
 # Maximum stacking
-stackfits.py (3-d reduced fits) max
+stackfits (3-d reduced fits) max
 # Minimum stacking
-stackfits.py (3-d reduced fits) min
+stackfits (3-d reduced fits) min
 # Mean stacking
-stackfits.py (3-d reduced fits) mean
+stackfits (3-d reduced fits) mean
 # Median stacking
-stackfits.py (3-d reduced fits) median
+stackfits (3-d reduced fits) median
 
 [example]
 # Maximum stacking
-stackfits.py rTRCS00000010.fits  max
+stackfits rTRCS00000010.fits  max
 # Minimum stacking
-stackfits.py rTRCS00000010.fits  min
+stackfits rTRCS00000010.fits  min
 # Mean stacking
-stackfits.py rTRCS00000010.fits  mean
+stackfits rTRCS00000010.fits  mean
 # Median stacking
-stackfits.py rTRCS00000010.fits  median
+stackfits rTRCS00000010.fits  median
 ```
 
 ### 3. Splitting [in preparation]
@@ -147,11 +147,11 @@ If you are going to use `Moving Object Photometry (movphot)`[(bitbucket)](https:
 ```
 [usage]
 # Mask pixels and split fits into multiple 2-d fits
-mask_split.py (3-d fits)
+mask_split (3-d fits)
 
 [example]
 # Mask pixels and split fits to multiple 2-d fits
-mask_split.py rTRCS00000010.fits
+mask_split rTRCS00000010.fits
 ```
 Output fits are as follows (when the number of frames is 3).
 The masked and splitted frames hav suffix `ms` like `rTRCS00000010ms0001.fits`.
@@ -169,7 +169,7 @@ cat glist.txt | awk '{print substr($0,17,3)}' > gID.txt
 cat rlist.txt | awk '{print substr($0,17,3)}' > rID.txt
 cat ilist.txt | awk '{print substr($0,17,3)}' > iID.txt
 # Create common ID list 
-commonIDsearch.py gID.txt rID.txt iID.txt --pre rTRCS00001260ce0 
+commonIDsearch gID.txt rID.txt iID.txt --pre rTRCS00001260ce0 
 --post w.fits > glist_common.txt
 ```
 
