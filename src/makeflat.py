@@ -27,7 +27,14 @@ def chopped_mean(cube):
   return img
 
 
-if __name__ == "__main__":
+def main(args=None):
+  """This is the main function called by the `makeflat` script.
+
+  Parameters
+  ----------
+  args : argparse.Namespace
+    Arguments passed from the command-line as defined below.
+  """
   parser = ap(description="Make a mater flat frame from a 3-d fits")
   parser.add_argument(
     "--flat", type=str, required=True,
@@ -75,3 +82,22 @@ if __name__ == "__main__":
 
   # Write new fits 
   flat.writeto(out, overwrite=args.overwrite)
+
+
+if __name__ == "__main__":
+  parser = ap(description="Make a mater flat frame from a 3-d fits")
+  parser.add_argument(
+    "--flat", type=str, required=True,
+    help="a raw flat frame")
+  parser.add_argument(
+    "--dark", type=str, required=True,
+    help="a raw dark frame")
+  parser.add_argument(
+    "--out", type=str, default=None,
+    help="output fits file")
+  parser.add_argument(
+    "-f", dest="overwrite", action="store_true",
+    help="overwrite a fits image")
+  args = parser.parse_args()
+  
+  main(args)

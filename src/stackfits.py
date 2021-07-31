@@ -50,19 +50,14 @@ def stack3dfits(cube, type):
   return img
 
 
-if __name__ == '__main__':
-  parser = ap(description="Stack 3-d fits")
-  parser.add_argument(
-    "fits", type=str, 
-    help="a raw 3-d fits")
-  parser.add_argument(
-    "type", type=str, choices=["max", "min", "mean", "median"], 
-    help="stacking type")
-  parser.add_argument(
-    "-f", dest="overwrite", action="store_true",
-    help="overwrite a fits image")
-  args = parser.parse_args()
- 
+def main(args=None):
+  """This is the main function called by the `stackfits` script.
+
+  Parameters
+  ----------
+  args : argparse.Namespace
+    Arguments passed from the command-line as defined below.
+  """
   # Extract filename
   filename = os.path.basename(args.fits)
 
@@ -98,3 +93,20 @@ if __name__ == '__main__':
   hdu[0].data = img
   out = f"{args.type}{filename}"
   hdu.writeto(out, overwrite=args.overwrite)
+
+
+if __name__ == '__main__':
+  parser = ap(description="Stack 3-d fits")
+  parser.add_argument(
+    "fits", type=str, 
+    help="a raw 3-d fits")
+  parser.add_argument(
+    "type", type=str, choices=["max", "min", "mean", "median"], 
+    help="stacking type")
+  parser.add_argument(
+    "-f", dest="overwrite", action="store_true",
+    help="overwrite a fits image")
+  args = parser.parse_args()
+ 
+
+  main(args)

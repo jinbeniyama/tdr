@@ -26,15 +26,10 @@ def chopped_mean(cube):
   img = img/(nz-1.0)
   return img
 
+def main():
+  print(1)
 
-def main(args=None):
-  """This is the main function called by the `makedark` script.
-
-  Parameters
-  ----------
-  args : argparse.Namespace
-    Arguments passed from the command-line as defined below.
-  """
+if __name__ == "__main__":
   parser = ap(description="Make a mater dark frame from a 3-d fits")
   parser.add_argument(
     "fits", type=str,
@@ -69,19 +64,3 @@ def main(args=None):
 
   # Write new fits 
   dark.writeto(out, overwrite=args.overwrite)
-
-
-if __name__ == "__main__":
-  parser = ap(description="Make a mater dark frame from a 3-d fits")
-  parser.add_argument(
-    "fits", type=str,
-    help="fits file to compile a dark-frame")
-  parser.add_argument(
-    "--out", type=str, default=None,
-    help="output fits file")
-  parser.add_argument(
-    "-f", dest="overwrite", action="store_true",
-    help="overwrite a fits image")
-  args = parser.parse_args()
-  
-  main(args)
