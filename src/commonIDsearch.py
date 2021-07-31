@@ -12,6 +12,21 @@ def main(args=None):
   args : argparse.Namespace
     Arguments passed from the command-line as defined below.
   """
+  parser = ap(description="Convert ID to fitslist")
+  parser.add_argument(
+    "ID", nargs="*", 
+    help="ID text")
+  parser.add_argument(
+    "--txt", nargs="*", 
+    help="original text")
+  parser.add_argument(
+    "--pre", type=str, default=None, 
+    help="word before ID")
+  parser.add_argument(
+    "--post", type=str, default=None, 
+    help="word after ID")
+  args = parser.parse_args()
+  
   # Save IDs
   ID_list_all = []
   for ID in args.ID:

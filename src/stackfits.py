@@ -58,6 +58,18 @@ def main(args=None):
   args : argparse.Namespace
     Arguments passed from the command-line as defined below.
   """
+  parser = ap(description="Stack 3-d fits")
+  parser.add_argument(
+    "fits", type=str, 
+    help="a raw 3-d fits")
+  parser.add_argument(
+    "type", type=str, choices=["max", "min", "mean", "median"], 
+    help="stacking type")
+  parser.add_argument(
+    "-f", dest="overwrite", action="store_true",
+    help="overwrite a fits image")
+  args = parser.parse_args()
+
   # Extract filename
   filename = os.path.basename(args.fits)
 
