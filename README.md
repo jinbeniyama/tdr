@@ -134,7 +134,7 @@ stackfits.py rTRCS00000010.fits  median
 ```
 
 ### 3. Splitting [in preparation]
-If you are going to use `Moving Object Photometry (movphot)`[bitbucket](https://bitbucket.org/jibeni/movphot/src/master/) for photometry,
+If you are going to use `Moving Object Photometry (movphot)`[(bitbucket)](https://bitbucket.org/jibeni/movphot/src/master/) for photometry,
 3-d fits cube should be split into multiple 2-d fits.
 
 ```
