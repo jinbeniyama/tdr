@@ -23,7 +23,7 @@ if __name__ == "__main__":
     "License :: OSI Approved :: MIT License"
     ]
   
-  # Upload scripts in 'src' as 'movphot'
+  # Upload scripts in 'src' as 'tdr'
   setup(
     name="tdr",
     version="0.0.1",
