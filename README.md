@@ -147,10 +147,6 @@ as well.
 
 ![pixel map](/TriCCS_pixel_map_20210817.jpg){width=50%}
 
-![<img src="image.png" width="250"/>](/TriCCS_pixel_map_20210817.jpg)
-![<img src="image.png" width="100"/>](/TriCCS_pixel_map_20210817.jpg)
-![<img src="image.png" width="50"/>](/TriCCS_pixel_map_20210817.jpg)
-
 ```
 [usage]
 # Split fits into multiple 2-d fits while cutting non-sensitive pixels
