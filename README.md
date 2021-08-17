@@ -17,7 +17,7 @@ you can apply it for imaging data taken with other high-speed cameras
 2. Stacking fits by mean, median, etc.
 
 
-3. Splitting fits
+3. Masking and splitting
 (only for photometry using `Moving Object Photometry (movphot)` ([bitbucket](https://bitbucket.org/jin_beniyama/movphot/src/master/)) )
 
 4. Common ID search
@@ -144,7 +144,8 @@ If you are going to use `Moving Object Photometry (movphot)`[(bitbucket)](https:
 3-d fits cube should be split into multiple 2-d fits.
 Cutting non-sensitive pixels and masking nor well corrected pixels are done
 as well.
-![pixel map](TriCCS_pixel_map_20210817.pdf, "TriCCS pixel map")
+
+![pixel map](/TriCCS_pixel_map_20210817.jpg)
 
 ```
 [usage]
