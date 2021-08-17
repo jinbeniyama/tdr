@@ -162,6 +162,7 @@ mask_split rTRCS00000010.fits  --mask
 ```
 The masked and splitted frames hav suffix `ms` like `rTRCS00000010ms0001.fits`.
 Output fits examples are as follows (when the number of frames is 3).
+
 - `rTRCS00000010ms0001.fits`
 - `rTRCS00000010ms0002.fits`
 - `rTRCS00000010ms0003.fits`
