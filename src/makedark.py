@@ -48,7 +48,7 @@ def main(args):
   # Add history
   hdr = dark.header
   hdr.add_history(
-    f"[makedark] created from {os.path.basename(args.fits)}")
+    f"[makedark] original dark frames : {os.path.basename(args.fits)}")
 
   if args.out is None:
     out = f"d{os.path.basename(args.fits)}"
