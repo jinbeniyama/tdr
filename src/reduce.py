@@ -8,7 +8,7 @@ import numpy as np
 import astropy.io.fits as fits
 
 
-def main(args=None):
+def main(args):
   """This is the main function called by the `reduce` script.
 
   Parameters
@@ -16,24 +16,6 @@ def main(args=None):
   args : argparse.Namespace
     Arguments passed from the command-line as defined below.
   """
-  parser = ap(description="Do standard reduction for an object frame")
-  parser.add_argument(
-    "--obj", type=str, required=True,
-    help="a raw fits image")
-  parser.add_argument(
-    "--dark", type=str, required=True,
-    help="a raw dark frame")
-  parser.add_argument(
-    "--flat", type=str, required=True,
-    help="a raw flat frame")
-  parser.add_argument(
-    "--out", type=str, default=None,
-    help="output fits file")
-  parser.add_argument(
-    "-f", dest="overwrite", action="store_true",
-    help="overwrite a fits image")
-  args = parser.parse_args()
-
   # Read object frame
   hdu_obj = fits.open(args.obj)
   hdr = hdu_obj[0].header
