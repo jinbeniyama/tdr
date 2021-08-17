@@ -61,7 +61,8 @@ like below.
 1. object `TRCS00000010.fits` (10 s)
 2. dark for flat `TRCS00000020.fits` (1s)
 3. dark for object `TRCS00000030.fits` (10s)
-4. flat `TRCS00000040.fits` (1s)
+4. flat `TRCS00000040.fits` (1s, twilight field of view 1) 
+and `TRCS00000050.fits` (1s, twilight field of view 2), 
 
 Dark subtraction and flat-field correction are done as follows.
 
@@ -82,19 +83,17 @@ makedark TRCS00000020.fits
 makedark TRCS00000030.fits
 ```
 
-Next, create a master normalized flat frame using master dark for a flat frame.
+Next, create a master normalized flat frame using master dark for flat frames
 , which has prefix `f` like `fTRCS00000040.fits`.
-
-The maximum count frame is not used for stacking as well.
 
 ```
 [usage]
 # Create master flat
-makeflat --flat (3-d flat) --dark (2-d master dark)
+makeflat --flat (3-d flat frames) --dark (2-d master dark)
 
 [example]
 # Create master flat
-makeflat --flat TRCS00000040.fits --dark dTRCS00000020.fits
+makeflat --flat TRCS00000040.fits TRCS00000050.fits --dark dTRCS00000020.fits
 ```
 
 Finally, reduce an object frame using both master dark and flat frames. 
@@ -140,21 +139,31 @@ stackfits rTRCS00000010.fits  mean
 stackfits rTRCS00000010.fits  median
 ```
 
-### 3. Splitting [in preparation]
+### 3. Masking and splitting
 If you are going to use `Moving Object Photometry (movphot)`[(bitbucket)](https://bitbucket.org/jin_beniyama/movphot/src/master/) for photometry,
 3-d fits cube should be split into multiple 2-d fits.
+Cutting non-sensitive pixels and masking nor well corrected pixels are done
+as well.
+![pixel map](TriCCS_pixel_map_20210817.pdf, "TriCCS pixel map")
 
 ```
 [usage]
-# Mask pixels and split fits into multiple 2-d fits
+# Split fits into multiple 2-d fits while cutting non-sensitive pixels
 mask_split (3-d fits)
+# + Masking not well corrected pixels (count is set to 1 for masked pixels)
+mask_split (3-d fits) --mask
 
 [example]
-# Mask pixels and split fits to multiple 2-d fits
-mask_split rTRCS00000010.fits
+# Split fits into multiple 2-d fits while cutting non-sensitive pixels
+mask_split rTRCS00000010.fits 
+# + Masking not well corrected pixels (count is set to 1 for masked pixels)
+mask_split rTRCS00000010.fits  --mask
 ```
-Output fits are as follows (when the number of frames is 3).
 The masked and splitted frames hav suffix `ms` like `rTRCS00000010ms0001.fits`.
+Output fits examples are as follows (when the number of frames is 3).
+- `rTRCS00000010ms0001.fits`
+- `rTRCS00000010ms0002.fits`
+- `rTRCS00000010ms0003.fits`
 
 
 ### 4. Common ID search
