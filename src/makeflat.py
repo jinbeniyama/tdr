@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """ Make a master flat frame from a 3-d fits
+2 types of normalization, median and mean, are implemented.
 """
 from argparse import ArgumentParser as ap
 import os
@@ -27,7 +28,7 @@ def chopped_mean(cube):
   return img
 
 
-def main(args=None):
+def main(args):
   """This is the main function called by the `makeflat` script.
 
   Parameters
@@ -35,21 +36,6 @@ def main(args=None):
   args : argparse.Namespace
     Arguments passed from the command-line as defined below.
   """
-  parser = ap(description="Make a mater flat frame from a 3-d fits")
-  parser.add_argument(
-    "--flat", type=str, required=True,
-    help="a raw flat frame")
-  parser.add_argument(
-    "--dark", type=str, required=True,
-    help="a raw dark frame")
-  parser.add_argument(
-    "--out", type=str, default=None,
-    help="output fits file")
-  parser.add_argument(
-    "-f", dest="overwrite", action="store_true",
-    help="overwrite a fits image")
-  args = parser.parse_args()
-
   hdu_flat = fits.open(args.flat)
   src_flat = hdu_flat[0]
   flat = src_flat.data
@@ -62,8 +48,15 @@ def main(args=None):
   assert len(dark.shape)==2, "Dark should be 2-d fits."
   
   img = chopped_mean(flat) - dark
-  # Normalize by mean
-  img = img/np.mean(img)
+
+  if args.norm=="mean":
+    # Normalize by mean
+    img = img/np.mean(img)
+  elif args.norm=="median":
+    # Normalize by median
+    # This option is useful as a first step 
+    #   for twilight flat frames including stars
+    img = img/np.median(img)
 
   # Create 2-d master flat
   flat = fits.PrimaryHDU(data=img, header=hdr_flat)
@@ -73,6 +66,8 @@ def main(args=None):
     f"[makeflat] created from {os.path.basename(args.flat)}")
   hdr.add_history(
     f"[makeflat] created from {os.path.basename(args.dark)}")
+  hdr.add_history(
+    f"[makeflat] normalization ({args.norm})")
 
 
   if args.out is None:
@@ -92,6 +87,9 @@ if __name__ == "__main__":
   parser.add_argument(
     "--dark", type=str, required=True,
     help="a raw dark frame")
+  parser.add_argument(
+    "--norm", type=str, default="mean",
+    help="type of normalization (mean or median)")
   parser.add_argument(
     "--out", type=str, default=None,
     help="output fits file")
