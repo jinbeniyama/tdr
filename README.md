@@ -145,7 +145,7 @@ If you are going to use `Moving Object Photometry (movphot)`[(bitbucket)](https:
 Cutting non-sensitive pixels and masking nor well corrected pixels are done
 as well.
 
-![pixel map](/TriCCS_pixel_map_20210817.jpg){width=300 height=170}
+![pixel map](/TriCCS_pixel_map_20210817.jpg){width=50%}
 
 ```
 [usage]
