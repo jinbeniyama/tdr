@@ -17,7 +17,7 @@ def main(args):
   fig = plt.figure(figsize=(10, 5))
   ax_g = fig.add_axes([0.2, 0.2, 0.5, 0.7])
   ax_g.set_xlabel("move up event")
-  ax_g.set_ylabel("move up time [micro second]")
+  ax_g.set_ylabel("move up time [musec]")
   title = f"{args.title} N={len(df_g)}"
   ax_g.set_title(title)
 
@@ -47,7 +47,7 @@ def main(args):
   xmin, xmax = ax_g.get_xlim()
   ax_g.hlines(
     average_g, xmin, xmax, lw=1, color="green", linestyle="dashed", 
-    label=f"Average: {average_g} us\nStandard Deviation: {std_g} us")
+    label=f"Average:\n {average_g} us\nStandard Deviation:\n {std_g} us")
   plt.fill_between([xmin, xmax], average_g+std_g, average_g-std_g, 
     facecolor='green', alpha=0.3)
   ax_g.legend(bbox_to_anchor=(1.02, 1), loc='upper left', borderaxespad=0,
