@@ -9,7 +9,7 @@ from argparse import ArgumentParser as ap
 import matplotlib.pyplot as plt
 
 
-def main():
+def main(args):
   """Main function.
   """
   df_g = pd.read_csv(args.csv, sep=" ")
@@ -57,11 +57,15 @@ def main():
 
 if __name__ == "__main__":
   parser = ap(description="Plot extracted GPS time information")
-  parser.add_argument("csv", type=str, help="g,r and i in order")
-  parser.add_argument("-out", type=str, 
-    default="GPStime.png", help="output csv filename")
-  parser.add_argument("-title", type=str, 
-    default=None, help="title used in figure")
+  parser.add_argument(
+    "csv", type=str, 
+    help="a csv of a GPS time")
+  parser.add_argument(
+    "-out", type=str, default="GPStime.png", 
+    help="a name of an output image")
+  parser.add_argument(
+    "-title", type=str, default=None, 
+    help="figure title")
   args = parser.parse_args()
    
   main(args)
