@@ -21,21 +21,21 @@ def main(args):
   hdr = hdu_obj[0].header
 
   # Read dark frame
-  dark_hdu = fits.open(args.dark)
+  hdu_dark = fits.open(args.dark)
   src_dark = hdu_dark[0]
   dark = src_dark.data
   assert len(dark.shape)==2, "Dark should be 2-d fits."
 
   # Read flat frame
-  flat_hdu = fits.open(args.flat)
+  hdu_flat = fits.open(args.flat)
   src_flat = hdu_flat[0]
   flat = src_flat.data
   assert len(flat.shape)==2, "Flat should be 2-d fits."
 
   # Do dark subtraction
-  print(f"median count (before dark subtraction) {np.median(hdu[0].data):.1f}")
-  hdu_obj[0].data = hdu_obj[0] - dark
-  print(f"median count (after dark subtraction) {np.median(hdu[0].data):.1f}")
+  print(f"median count (before dark subtraction) {np.median(hdu_obj[0].data):.1f}")
+  hdu_obj[0].data = hdu_obj[0].data - dark
+  print(f"median count (after dark subtraction) {np.median(hdu_obj[0].data):.1f}")
 
   # Do flat-field correction
   hdu_obj[0].data = hdu_obj[0].data/flat
