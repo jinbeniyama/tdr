@@ -47,7 +47,7 @@ def main(args):
     f"[reduce] created from (flat) {os.path.basename(args.flat)}")
 
   if args.out is None:
-    out = f"r{os.path.join.basename(args.obj)}"
+    out = f"r{os.path.basename(args.obj)}"
   else:
     out = args.out
 
