@@ -127,7 +127,7 @@ def main(args):
     f"[makeflat] normalization : {args.norm}")
 
   if args.out is None:
-    out = f"f{os.path.basename(args.flat)}"
+    out = f"f{os.path.basename(args.flat[0])}"
   else:
     out = args.out
 
