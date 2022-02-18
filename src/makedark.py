@@ -35,23 +35,38 @@ def main(args):
   args : argparse.Namespace
     Arguments passed from the command-line as defined below.
   """
-  hdu = fits.open(args.fits)
-  src = hdu[0]
-  cube = src.data
-  hdr = src.header
-  assert len(cube.shape)==3, "Input should be 3-d fits."
+  darkcube = []
+  for idx,dk in enumerate(args.dark):
+    hdu = fits.open(dk)
+    src = hdu[0]
+    dark = src.data
+    if idx==0:
+      hdr_dark = src.header
+      hdr_fits = os.path.basename(dk)
+    assert len(dark.shape)==3, "Input should be 3-d fits."
+    # 3d dark frames
+    img = chopped_mean(dark)
+    # Add temporally cube 
+    darkcube.append(img)
+    print(f"  Read a dark frame {dk}")
 
-  img = chopped_mean(cube)
+  # Create a master dark from a dark cube
+  print(f"  Dimention of dark cube :{len(darkcube)}")
+  masterdark = np.median(darkcube, axis=0)
+  print(f"  Shape of a master dark :{masterdark.shape}")
 
-  # Create 2-d master dark
-  dark = fits.PrimaryHDU(data=img, header=hdr)
+  # Create 2-d master dark (Use a header of the first fits!)
+  dark = fits.PrimaryHDU(data=masterdark, header=hdr_dark)
   # Add history
   hdr = dark.header
   hdr.add_history(
-    f"[makedark] original dark frames : {os.path.basename(args.fits)}")
+    f"[makedark] header info. is inherited from {hdr_fits}")
+  for idx,dk in enumerate(args.dark):
+    hdr.add_history(
+            f"[makedark] original dark frames : {idx} {dk}")
 
   if args.out is None:
-    out = f"d{os.path.basename(args.fits)}"
+    out = f"d{os.path.basename(args.dark[0])}"
   else:
     out = args.out
 
@@ -62,8 +77,8 @@ def main(args):
 if __name__ == "__main__":
   parser = ap(description="Make a mater dark frame from a 3-d fits")
   parser.add_argument(
-    "fits", type=str,
-    help="fits file to compile a dark-frame")
+    "dark", type=str, nargs="*",
+    help="fits files to compile a dark-frame")
   parser.add_argument(
     "--out", type=str, default=None,
     help="output fits file")
