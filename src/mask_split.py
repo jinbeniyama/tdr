@@ -68,7 +68,7 @@ def main(args):
     os.makedirs(outdir)
   
   fitsname = os.path.basename(args.fits)
-  basename = fitsname.split("fits")[0]
+  basename = fitsname.split(".fits")[0]
 
   # Temporally determine a used filter from file name.
   # Of course, header information is useful as well.
@@ -88,22 +88,29 @@ def main(args):
   hdu = fits.open(args.fits)
   hdr = hdu[0].header
   tframe = hdr["TFRAME"]
+  # Total exposure time
   t_exp = hdr["EXPTIME"]
   t_exp = -t_exp
 
+  # Check this part carefully !!! =============================================
   # Obtain an exposure ending/starting time 
   try:
-    ## For old one (ending)
-    ### UTC     = '2021-03-08T16:11:32.555790' / exposure ending date and time
+    ## For old one (UTC is exposure `ending` time) --2021.06??
+    ## ex.)
+    ## UTC     = '2021-03-08T16:11:32.555790' / exposure ending date and time
     t0 = hdr["UTC"] 
+    t0_dt = datetime.datetime.strptime(t0, "%Y-%m-%dT%H:%M:%S.%f")
+    # ending to starting
+    t0_dt = t0_dt + datetime.timedelta(seconds=t_exp)
   except:
-    ## For new one (starting)
-    ### DATE-OBS= '2021-10-15'         / Observation start date (yyyy-mm-dd)
-    ### UT-STR  = '14:40:07.40'        / UT at exposure start (HH:MM:SS.SS)
+    ## For new one (UT-STR is namely exposure `starting` time) 2021.06--?
+    ## ex.)
+    ## DATE-OBS= '2021-10-15'         / Observation start date (yyyy-mm-dd)
+    ## UT-STR  = '14:40:07.40'        / UT at exposure start (HH:MM:SS.SS)
     t0 = f"{hdr['DATE-OBS']}T{hdr['UT-STR']}"
+    t0_dt = datetime.datetime.strptime(t0, "%Y-%m-%dT%H:%M:%S.%f")
+  # ===========================================================================
 
-  t0_dt = datetime.datetime.strptime(t0, "%Y-%m-%dT%H:%M:%S.%f")
-  t0_dt = t0_dt + datetime.timedelta(seconds=t_exp)
   data_temp = hdu[0].data
   mask = TriCCSmask()
 
