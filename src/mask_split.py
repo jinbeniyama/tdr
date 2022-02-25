@@ -88,9 +88,6 @@ def main(args):
   hdu = fits.open(args.fits)
   hdr = hdu[0].header
   tframe = hdr["TFRAME"]
-  # Total exposure time
-  t_exp = hdr["EXPTIME"]
-  t_exp = -t_exp
 
   # Check this part carefully !!! =============================================
   # Obtain an exposure ending/starting time 
@@ -100,8 +97,10 @@ def main(args):
     ## UTC     = '2021-03-08T16:11:32.555790' / exposure ending date and time
     t0 = hdr["UTC"] 
     t0_dt = datetime.datetime.strptime(t0, "%Y-%m-%dT%H:%M:%S.%f")
+    # Total exposure time
+    t_exp = hdr["EXPTIME"]
     # ending to starting
-    t0_dt = t0_dt + datetime.timedelta(seconds=t_exp)
+    t0_dt = t0_dt + datetime.timedelta(seconds=-t_exp)
   except:
     ## For new one (UT-STR is namely exposure `starting` time) 2021.06--?
     ## ex.)
@@ -124,9 +123,15 @@ def main(args):
       f"[mask_split] original fits : {fitsname}")
     print(f"  Split to {nz} fits")
     for i in range(nz):
-      t_dt_temp = t0_dt + datetime.timedelta(seconds=tframe*i)
-      t_temp = datetime.datetime.strftime(t_dt_temp, "%Y-%m-%dT%H:%M:%S.%f")
-      hdr["UTC"] = (t_temp, "exposure starting date and time")
+      # Starting time of exposure
+      t0_dt_temp = t0_dt + datetime.timedelta(seconds=tframe*i)
+      # Central time of exposure
+      t_mid_dt_temp = t0_dt_temp + datetime.timedelta(seconds=tframe*0.5)
+      t0_temp = datetime.datetime.strftime(t0_dt_temp, "%Y-%m-%dT%H:%M:%S.%f")
+      t_mid_temp = datetime.datetime.strftime(t_mid_dt_temp, "%Y-%m-%dT%H:%M:%S.%f")
+      hdr["UTC0"] = (t0_temp, "exposure starting date and time")
+      hdr["UTC"] = (t_mid_temp, "central exposure date and time")
+
       # Use sensitive pixels
       temp = data_temp[i, (ymin-1):ymax, (xmin-1):xmax]
       if args.mask:
