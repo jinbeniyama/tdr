@@ -43,9 +43,16 @@ def main(args):
     if idx==0:
       hdr_dark = src.header
       hdr_fits = os.path.basename(dk)
-    assert len(dark.shape)==3, "Input should be 3-d fits."
+
     # 3d dark frames
-    img = chopped_mean(dark)
+    if len(dark.shape)==3:
+      print("  Use chopped mean of 3-d dark fits")
+      img = chopped_mean(dark)
+    # 2d dark frames
+    elif len(dark.shape)==2:
+      print("  Use 2-d dark fits directly")
+      pass
+
     # Add temporally cube 
     darkcube.append(img)
     print(f"  Read a dark frame {dk}")
