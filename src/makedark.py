@@ -28,7 +28,12 @@ def chopped_mean(cube):
 
 
 def main(args):
-  """This is the main function called by the `makedark` script.
+  """
+  This is the main function called by the `makedark` script.
+  
+  Note
+  ----
+  Fits header of first dark frame(s) is used in master dark frame.
 
   Parameters
   ----------
@@ -40,7 +45,9 @@ def main(args):
     hdu = fits.open(dk)
     src = hdu[0]
     dark = src.data
-    if idx==0:
+
+    # Use header of first dark frame(s)
+    if idx == 0:
       hdr_dark = src.header
       hdr_fits = os.path.basename(dk)
 
@@ -49,7 +56,7 @@ def main(args):
       nz, _, _ = dark.shape
       if nz == 1:
         print("  Use single 3-d dark fits directory")
-        img = dark
+        img = dark[0]
       else:     
         print("  Use chopped mean of 3-d dark fits")
         img = chopped_mean(dark)
