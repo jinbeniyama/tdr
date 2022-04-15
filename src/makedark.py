@@ -46,12 +46,17 @@ def main(args):
 
     # 3d dark frames
     if len(dark.shape)==3:
-      print("  Use chopped mean of 3-d dark fits")
-      img = chopped_mean(dark)
+      nz, _, _ = dark.shape
+      if nz == 1:
+        print("  Use single 3-d dark fits directory")
+        img = dark
+      else:     
+        print("  Use chopped mean of 3-d dark fits")
+        img = chopped_mean(dark)
     # 2d dark frames
     elif len(dark.shape)==2:
       print("  Use 2-d dark fits directly")
-      pass
+      img = dark
 
     # Add temporally cube 
     darkcube.append(img)
