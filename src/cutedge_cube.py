@@ -16,12 +16,6 @@ import os
 import datetime 
 
 
-__naxis3_keywords = (
-  'NAXIS3', 'CTYPE3', 'CRPIX3', 'CRVAL3', 'CUNIT3',
-  'CD1_3', 'CD2_3', 'CD3_3', 'CD3_2', 'CD3_1',
-)
-
-
 def main(args):
   """This is the main function called by the `cutedge_tomoe` script.
 
