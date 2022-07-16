@@ -11,16 +11,18 @@ you can apply it for imaging data taken with other high-speed cameras
 (Tomo-e Gozen etc.).
 
 ### Procedures
-1. Calibration (dark subtraction, flat-field correction)
+1-1. Calibration (dark subtraction, flat-field correction)
 
+1-2. Stacking fits by mean, median, etc.
 
-2. Stacking fits by mean, median, etc.
-
-
-3. Masking and splitting
+1-3. Masking and splitting
 (only for photometry using `Moving Object Photometry (movphot)` ([bitbucket](https://bitbucket.org/jin_beniyama/movphot/src/master/)) )
 
-4. Common ID search
+1-4. Common ID search
+
+
+2-1. Spectroscopy with Pypelt
+
 
 ## Installing
 ```
