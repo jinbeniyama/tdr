@@ -122,7 +122,7 @@ def main(args):
         hdr.set("NAXIS", 2)
         for key in __naxis3_keywords: hdr.remove(key, ignore_missing=True)
         hdu[0].header.add_history(
-            f"[mask_split] original fits : {fitsname}")
+            f"[video2image] original fits : {fitsname}")
         print(f"  Split to {nz} fits")
         for i in range(nz):
             # Starting time of exposure
@@ -152,7 +152,7 @@ def main(args):
             temp = np.where(mask==1, 1.0, temp)
         hdu[0].data = temp
         hdu[0].header.add_history(
-            f"[mask_split] original fits : {fitsname}")
+            f"[video2image] original fits : {fitsname}")
         out = f"{filename}_c.fits"
         hdu.writeto(os.path.join(out), overwrite=True)
 
