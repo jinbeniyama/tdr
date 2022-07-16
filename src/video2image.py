@@ -27,29 +27,29 @@ import os
 import datetime 
 
 __naxis3_keywords = (
-  'NAXIS3', 'CTYPE3', 'CRPIX3', 'CRVAL3', 'CUNIT3',
-  'CD1_3', 'CD2_3', 'CD3_3', 'CD3_2', 'CD3_1',
+    'NAXIS3', 'CTYPE3', 'CRPIX3', 'CRVAL3', 'CUNIT3',
+    'CD1_3', 'CD2_3', 'CD3_3', 'CD3_2', 'CD3_1',
 )
 
 
 def TriCCSmask():
-  """
-  Return boolian mask to be masked. 
-  This is easy way to paste correct wcs while suppessing 
-  false detections from not well corrected pixels. (in J.BENIYAMA's knowledge)
-  """
-  # Total sensitive pixels
-  nx, ny = 2160, 1280
-  arr_temp = np.zeros(shape=(ny, nx))
-  arr_temp[0:10,:] = 1
-  arr_temp[ny-10:ny,:] = 1
-  arr_temp[:,0:10] = 1
-  arr_temp[:,nx-10:nx] = 1
-  arr_temp[0:150, 0:150] = 1
-  arr_temp[0:150, nx-150:nx] = 1
-  arr_temp[ny-150:ny, 0:150] = 1
-  arr_temp[ny-150:ny, nx-150:nx] = 1
-  return arr_temp
+    """
+    Return boolian mask to be masked. 
+    This is easy way to paste correct wcs while suppessing 
+    false detections from not well corrected pixels. (in J.BENIYAMA's knowledge)
+    """
+    # Total sensitive pixels
+    nx, ny = 2160, 1280
+    arr_temp = np.zeros(shape=(ny, nx))
+    arr_temp[0:10,:] = 1
+    arr_temp[ny-10:ny,:] = 1
+    arr_temp[:,0:10] = 1
+    arr_temp[:,nx-10:nx] = 1
+    arr_temp[0:150, 0:150] = 1
+    arr_temp[0:150, nx-150:nx] = 1
+    arr_temp[ny-150:ny, 0:150] = 1
+    arr_temp[ny-150:ny, nx-150:nx] = 1
+    return arr_temp
 
 
 def main(args):
@@ -91,7 +91,7 @@ def main(args):
     tframe = hdr["TFRAME"]
 
     # Check this part carefully !!! ===========================================
-    # Obtain an exposure ending/starting time 
+    # Obtain an exposure starting time 
     try:
         # For old one (UTC is exposure 'starting' time, not 'ending') -2021.08
         # (K. Matsubayashi, private communications in 2022.07)
@@ -122,7 +122,7 @@ def main(args):
         hdr.set("NAXIS", 2)
         for key in __naxis3_keywords: hdr.remove(key, ignore_missing=True)
         hdu[0].header.add_history(
-            f"[mask_split] original fits : {fitsname}")
+            f"[video2image] original fits : {fitsname}")
         print(f"  Split to {nz} fits")
         for i in range(nz):
             # Starting time of exposure
@@ -152,7 +152,7 @@ def main(args):
             temp = np.where(mask==1, 1.0, temp)
         hdu[0].data = temp
         hdu[0].header.add_history(
-            f"[mask_split] original fits : {fitsname}")
+            f"[video2image] original fits : {fitsname}")
         out = f"{filename}_c.fits"
         hdu.writeto(os.path.join(out), overwrite=True)
 
