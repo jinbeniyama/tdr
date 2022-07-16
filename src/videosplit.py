@@ -58,7 +58,6 @@ def main(args):
     # =========================================================================
 
     data_temp = hdu[0].data
-    
 
 
     # Mask edge and split for 3-d fits

@@ -74,7 +74,8 @@ def main(args=None):
   
     # Extract filename
     filename = os.path.basename(args.fits)
-  
+ 
+    assert False, "check header keywords"
     hdu = fits.open(args.fits)
     hdr = hdu[0].header
     cube = hdu[0].data
