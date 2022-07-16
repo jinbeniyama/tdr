@@ -123,25 +123,55 @@ def main(args):
         for key in __naxis3_keywords: hdr.remove(key, ignore_missing=True)
         hdu[0].header.add_history(
             f"[video2image] original fits : {fitsname}")
-        print(f"  Split to {nz} fits")
-        for i in range(nz):
-            # Starting time of exposure
-            t0_dt_temp = t0_dt + datetime.timedelta(seconds=tframe*i)
-            # Central time of exposure
-            t_mid_dt_temp = t0_dt_temp + datetime.timedelta(seconds=tframe*0.5)
-            t0_temp = datetime.datetime.strftime(t0_dt_temp, "%Y-%m-%dT%H:%M:%S.%f")
-            t_mid_temp = datetime.datetime.strftime(t_mid_dt_temp, "%Y-%m-%dT%H:%M:%S.%f")
-            hdr["UTC0"] = (t0_temp, "exposure starting date and time")
-            hdr["UTC"] = (t_mid_temp, "central exposure date and time")
 
-            # Use sensitive pixels
-            temp = data_temp[i, (ymin-1):ymax, (xmin-1):xmax]
-            if args.mask:
-                # Mask not well corrected pixels
-                temp = np.where(mask==1, 1.0, temp)
-            hdu[0].data = temp
-            out = f"{basename}ms{i+1:04d}.fits"
-            hdu.writeto(os.path.join(outdir, out), overwrite=True)
+        
+        # With stacking
+        if args.stack:
+            N_stack = int(args.stack)
+            nz = int(nz/N_stack)
+            print(f"  Split to {nz} fits")
+            for i in range(nz):
+                # Starting time of exposure
+                t0_dt_temp = t0_dt + datetime.timedelta(seconds=tframe*i)
+                # Central time of exposure
+                t_mid_dt_temp = t0_dt_temp + datetime.timedelta(seconds=tframe*0.5)
+                t0_temp = datetime.datetime.strftime(t0_dt_temp, "%Y-%m-%dT%H:%M:%S.%f")
+                t_mid_temp = datetime.datetime.strftime(t_mid_dt_temp, "%Y-%m-%dT%H:%M:%S.%f")
+                hdr["UTC0"] = (t0_temp, "exposure starting date and time")
+                hdr["UTC"] = (t_mid_temp, "central exposure date and time")
+
+                # Remove unsensitive pixels
+                temp = data_temp[i, (ymin-1):ymax, (xmin-1):xmax]
+                if args.mask:
+                    # Mask not well corrected pixels
+                    temp = np.where(mask==1, 1.0, temp)
+                hdu[0].data = temp
+                out = f"{basename}s{N_stack}ms{i+1:04d}.fits"
+                hdu.writeto(os.path.join(outdir, out), overwrite=True)
+
+
+        else:
+            # Without stacking
+            print(f"  Split to {nz} fits")
+            for i in range(nz):
+                # Starting time of exposure
+                t0_dt_temp = t0_dt + datetime.timedelta(seconds=tframe*i)
+                # Central time of exposure
+                t_mid_dt_temp = t0_dt_temp + datetime.timedelta(seconds=tframe*0.5)
+                t0_temp = datetime.datetime.strftime(t0_dt_temp, "%Y-%m-%dT%H:%M:%S.%f")
+                t_mid_temp = datetime.datetime.strftime(t_mid_dt_temp, "%Y-%m-%dT%H:%M:%S.%f")
+                hdr["UTC0"] = (t0_temp, "exposure starting date and time")
+                hdr["UTC"] = (t_mid_temp, "central exposure date and time")
+
+                # Remove unsensitive pixels
+                temp = data_temp[i, (ymin-1):ymax, (xmin-1):xmax]
+                if args.mask:
+                    # Mask not well corrected pixels
+                    temp = np.where(mask==1, 1.0, temp)
+                hdu[0].data = temp
+                out = f"{basename}ms{i+1:04d}.fits"
+                hdu.writeto(os.path.join(outdir, out), overwrite=True)
+
 
     # Only masking edge for 2-d fits
     if len(data_temp.shape)==2:
