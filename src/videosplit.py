@@ -79,7 +79,6 @@ def main(args):
             hdr["UTC"] = (t_mid_temp, "central exposure date and time")
 
             # Use sensitive pixels
-            temp = data_temp[i, (ymin-1):ymax, (xmin-1):xmax]
             temp = data_temp[n*fits_per_video:(n+1)*fits_per_video, :, :]
             hdu[0].data = temp
             # s: split
