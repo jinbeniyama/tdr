@@ -42,11 +42,13 @@ def main(args):
         # UTC     = '2021-03-08T16:11:32.555790' / exposure ending date and time
         t0 = hdr["UTC"] 
         t0_dt = datetime.datetime.strptime(t0, "%Y-%m-%dT%H:%M:%S.%f")
+        kwd_time = "UTC"
     except:
         # For new one 2021.08-
         # GEXP-STR= '2021-10-27T20:10:50.371615' / GPS time at exposure start
         t0 = hdr["GEXP-STR"] 
         t0_dt = datetime.datetime.strptime(t0, "%Y-%m-%dT%H:%M:%S.%f")
+        kwd_time = "GEXP-STR"
 
         # Some headers below are not recomended !
         # DATE-OBS= '2021-10-15'         / Observation start date (yyyy-mm-dd)
@@ -69,14 +71,16 @@ def main(args):
         hdu[0].header.add_history(
             f"[videosplit] original fits : {fitsname}")
         for n in range(N_fits):
+            # epalsed time
+            t_elapse = tframe*n*fits_per_video
             # Starting time of exposure
-            t0_dt_temp = t0_dt + datetime.timedelta(seconds=tframe*n)
+            t0_dt_temp = t0_dt + datetime.timedelta(seconds=t_elapse)
             # Central time of exposure
-            t_mid_dt_temp = t0_dt_temp + datetime.timedelta(seconds=tframe*0.5)
             t0_temp = datetime.datetime.strftime(t0_dt_temp, "%Y-%m-%dT%H:%M:%S.%f")
-            t_mid_temp = datetime.datetime.strftime(t_mid_dt_temp, "%Y-%m-%dT%H:%M:%S.%f")
-            hdr["UTC0"] = (t0_temp, "exposure starting date and time")
-            hdr["UTC"] = (t_mid_temp, "central exposure date and time")
+
+            # Save as kwd_time     
+            # UTC and UTC0 is calculated by video2image.py
+            hdr[kwd_time] = (t0_temp, "exposure starting date and time")
 
             # Use sensitive pixels
             temp = data_temp[n*fits_per_video:(n+1)*fits_per_video, :, :]

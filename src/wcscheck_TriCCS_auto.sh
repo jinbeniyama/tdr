@@ -49,4 +49,4 @@ done
 wcsIDshow_TriCCS.py idlist_0.csv idlist_1.csv idlist_2.csv
 
 # move common fits to wcs_common
-wcsIDmove_TriCCS.sh idlist_0_common.csv idlist_1_common.csv idlist_2_common.csv
+#wcsIDmove_TriCCS.sh idlist_0_common.csv idlist_1_common.csv idlist_2_common.csv
