@@ -164,7 +164,7 @@ if __name__ == "__main__":
         "fits", type=str, 
         help="a reduced 3-d fits")
     parser.add_argument(
-        "--mask", type=bool, default=None, 
+        "--mask", action="store_true", default=False, 
         help="mask not well corrected pixes")
     args = parser.parse_args()
 
