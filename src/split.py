@@ -132,7 +132,7 @@ def main(args):
       hdr["UTC0"] = (t0_temp, "exposure starting date and time")
       hdr["UTC"] = (t_mid_temp, "central exposure date and time")
 
-      hdu[0].data = data_temp
+      hdu[0].data = data_temp[i, :, :]
       out = f"{basename}ms{i+1:04d}.fits"
       hdu.writeto(os.path.join(outdir, out), overwrite=True)
 
