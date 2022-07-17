@@ -60,7 +60,7 @@ def stack3dfits(cube, stype):
     cube : 3-d array-like
       3-dimentional array to be stacked
     stype : str
-      stacking type ('max', 'min', 'mean' or 'median')
+      stacking type ('max', 'min', 'mean', 'median', 'sum')
   
     Return
     ------
@@ -76,6 +76,8 @@ def stack3dfits(cube, stype):
       img = np.mean(cube, axis=0)
     elif args.stype=="median":
       img = np.median(cube, axis=0)
+    elif args.stype=="sum":
+      img = np.sum(cube, axis=0)
   
     return img
 
@@ -178,6 +180,8 @@ def main(args):
                 # Extract (N_stack) 3-d fits removing unsensitive pixels
                 temp = data_temp[i*N_stack:(i+1)*N_stack, (ymin-1):ymax, (xmin-1):xmax]
                 # Stacking 
+                # stype==sum is recoomended when you connect obserations 
+                # with different exposure times
                 temp = stack3dfits(temp, stype=args.stype)
                 if args.mask:
                     # Mask not well corrected pixels
