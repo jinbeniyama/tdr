@@ -92,7 +92,7 @@ def main(args):
     """
     
     # Create a directory to save output fits
-    outdir = "cutedge"
+    outdir = "reduce2d"
     if os.path.isdir(outdir):
         pass
     else:
