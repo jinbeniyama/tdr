@@ -15,8 +15,8 @@ def instinfo(inst):
 
     Parameter
     ---------
-    loc : str
-        location of an instrument (murikabushi or saitama)
+    inst : str
+        instrument (e.g., murikabushi, saitama)
 
     Returns
     -------
@@ -166,7 +166,8 @@ def shift_w_velocity(flist, hdr_kwd, v_ra, v_dec):
     img_shift = np.median(cube, axis=0)
     return img_shift
 
-def shift_sidereal(flist, hdr_kwd):
+
+def shift_sidereal(flist):
     """
     Shift 2d-fits files with velocity in pixel/s.
 
@@ -182,6 +183,39 @@ def shift_sidereal(flist, hdr_kwd):
     img_shift : array-like
         shifted 2-d image
     """
+
+    # Obtain wcs info of the first fits
+    fi0 = flist[0]
+    hdu = fits.open(fi0)
+    hdr = hdu[0].header
+    ny, nx = hdu[0].data.shape
+    w = wcs(header=hdr)
+    # Central x and y of the first fits in pixel 
+    x0, y0 = nx/2., ny/2.
+    # Central ra and dec of the first fits
+    cra0, cdec0  = w.all_pix2world(x0, y0, 0)
+
+    cube = []
+    for idx, fi in enumerate(flist):
+        # Obtain pixel coordinates of the standard ra and dec (cra0 and cdec0)
+        hdu = fits.open(fi)
+        hdr = hdu[0].header
+        w = wcs(header=hdr)
+        x, y  = w.all_world2pix(cra0, cdec0, 0)
+        # Shift length
+        dx, dy = x0-x, y0-y
+        dx, dy = int(dx), int(dy)
+        print(
+            f"  fits {idx+1:03d}: (cx, cy) = ({x:.1f}, {y:.1f}), "
+            f"(dx, dy) = ({dx:02d}, {dy:02d}) pix")
+
+        # Shift
+        tmp = np.roll(hdu[0].data, dy, axis=0)
+        tmp = np.roll(tmp, dx, axis=1)
+        # Save
+        cube.append(tmp)
+
+    img_shift = np.median(cube, axis=0)
     return img_shift
 
 
