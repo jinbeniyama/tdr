@@ -113,11 +113,16 @@ if __name__ == "__main__":
 
     # Shift with wcs
     elif args.mode == "sidereal":
-        img_shift = shift_sidereal(flist, hdr_kwd)
+        img_shift = shift_sidereal(flist)
 
     # Shift for a certain target
     elif args.mode == "nonsidereal":
-        img_shift = shift_nonsidereal(flist, hdr_kwd, args.target)
+        # Extract header keyword and pixel scale
+        hdr_kwd, p_scale, loc = instinfo(args.inst)
+        print(f"Instrument  : {args.inst}")
+        print(f"Header info : {hdr_kwd}")
+        print(f"Pixel scale : {p_scale} arcsec/pixel")
+        img_shift = shift_nonsidereal(flist, hdr_kwd, args.target, loc)
         # Update header
         hdu[0].header.add_history(
             "[shift2d] target {args.target}")

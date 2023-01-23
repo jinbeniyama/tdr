@@ -6,8 +6,57 @@ Common functions for triccs data reduction.
 from astropy.io import fits as fits
 from astropy.wcs import WCS as wcs
 from astropy.time import Time
+from scipy import interpolate
 import datetime
 import numpy as np
+from astroquery.jplhorizons import Horizons
+
+
+def utc2jd(utc):
+  """
+  utc : %Y-%m-%dT%H:%M:%S.%f
+  """
+  t = Time(str(utc), format='isot', scale='utc')
+  return t.jd
+
+
+def calc_JPLephem(
+    asteroid, date0, date1, step, obscode=None, loc=None, air=False):
+    """
+    Calculate asteroid ephemeris.
+  
+    Parameters
+    ----------
+    asteroid : str
+      asteroid name like "Ceres", "2019 FA" (should have space)
+    date0 : str
+      ephemeris start date like "2020-12-12"
+    date1 : str
+      ephemeris end date like "2020-12-12"
+    step : str
+      ephemeris step date like '1d' for 1-day, '30m' for 30-minutes
+    obscode : str, optional
+      IAU observation code. 
+      371:Okayama Astronomical Observatory
+      381:Kiso observatory
+    loc : dict, optional
+      dictionary like {lon=134.3356, lat=35.0253, elevation=449}
+    air : bool, optional
+      whether consider air pressure
+  
+    Return
+    ------
+    ephem : astropy.table.table.Table
+      calculated ephemeris
+    """
+    if obscode:
+        obj = Horizons(id=asteroid, location=obscode,
+            epochs={'start':date0, 'stop':date1, 'step':step})
+    elif loc:
+        obj = Horizons(id=asteroid, location=loc,
+            epochs={'start':date0, 'stop':date1, 'step':step})
+    eph = obj.ephemerides(refraction=air)
+    return eph
 
 
 def instinfo(inst):
@@ -24,6 +73,8 @@ def instinfo(inst):
         dictionary of header keywords
     p_scale : float
         pixel scale
+    loc : str
+        MPC observatory code
     """
 
     if inst == "murikabushi":
@@ -37,6 +88,7 @@ def instinfo(inst):
             exp="EXPTIME", gain="GAIN")
         # 0.72 arcsec/pixel
         p_scale = 0.72
+        loc = None
 
     # TODO: Update
     if inst == "saitama":
@@ -48,12 +100,14 @@ def instinfo(inst):
             exp="EXPTIME", gain=None)
         # 0.73 arcsec/pixel
         p_scale = 0.73
+        loc = None
 
     # TODO: Update
     if inst == "akeno":
         hdr_kwd = dict(
             datetime=None, date="DATE-OBS", time="UT-CEN",
             exp="EXPTIME", gain=None)
+        loc = None
 
     if inst == "triccs":
         hdr_kwd = dict(
@@ -64,8 +118,9 @@ def instinfo(inst):
         #       FYI, 'UTC' is central time.
         # 0.35 arcsec/pixel
         p_scale = 0.35
+        loc = 371
 
-    return hdr_kwd, p_scale
+    return hdr_kwd, p_scale, loc
 
 
 def obtain_fitstime(flist, hdr_kwd):
@@ -219,9 +274,10 @@ def shift_sidereal(flist):
     return img_shift
 
 
-def shift_nonsidereal(flist, hdr_kwd, target):
+def shift_nonsidereal(flist, hdr_kwd, target, loc):
     """
-    Shift 2d-fits files with velocity in pixel/s.
+    Shift 2d-fits files a target name.
+    Move target to a center.
 
     Parameters
     ----------
@@ -231,11 +287,88 @@ def shift_nonsidereal(flist, hdr_kwd, target):
         header keywords
     target : str
         target name
+    loc : str
+        Minor Planet Center observatory code
 
     Return
     ------
     img_shift : array-like
         shifted 2-d image
     """
+    
+    # Obtain the ephemeris of the target during the observations ==============
+    hdu0 = fits.open(flist[0])
+    hdu1 = fits.open(flist[-1])
+    hdr0 = hdu0[0].header
+    hdr1 = hdu1[0].header
+    t_exp = hdr1[hdr_kwd["exp"]]
+    # Starting time
+    t0_str = hdr0[hdr_kwd["datetime"]]
+    t1_str = hdr1[hdr_kwd["datetime"]]
+    try:
+        t1_str = datetime.datetime.strptime(t1_str, "%Y-%m-%dT%H:%M:%S.%f")
+    except:
+        t1_str = datetime.datetime.strptime(t1_str, "%Y-%m-%dT%H:%M:%S")
+    # Ending time
+    # +60 is necesary for ephemeris with 1min step to avoid 
+    #   'ValueError: A value in x_new is above the interpolation range.'
+    t1_end = t1_str + datetime.timedelta(seconds=(t_exp+60))
+    t1_end = datetime.datetime.strftime(t1_end, "%Y-%m-%dT%H:%M:%S.%f")
+    print(t1_str)
+    print(t1_end)
+    eph = calc_JPLephem(target, t0_str, t1_end, "1m", obscode=loc)
+    jd_list, ra_list, dec_list = eph["datetime_jd"].tolist(), eph["RA"].tolist(), eph["DEC"].tolist()
+    print(f"np.min(jd_list)")
+    print(f"np.max(jd_list)")
+    # To calculate ra and dec from jd
+    f_ra = interpolate.interp1d(jd_list, ra_list, kind='linear')
+    f_dec = interpolate.interp1d(jd_list, dec_list, kind='linear')
+    # Obtain the ephemeris of the target during the observations ==============
+
+
+
+    cube = []
+    for idx, fi in enumerate(flist):
+        # Obtain pixel coordinates of the standard ra and dec (cra0 and cdec0)
+        hdu = fits.open(fi)
+        hdr = hdu[0].header
+        ny, nx = hdu[0].data.shape
+        # Central pixel
+        cx, cy = nx/2., ny/2.
+        # Starting
+        t_str = hdr[hdr_kwd["datetime"]]
+        try:
+            t_str = datetime.datetime.strptime(t_str, "%Y-%m-%dT%H:%M:%S.%f")
+        except:
+            t_str = datetime.datetime.strptime(t_str, "%Y-%m-%dT%H:%M:%S")
+        t_exp = hdr[hdr_kwd["exp"]]
+        # Central time
+        t_cen = t_str + datetime.timedelta(seconds=t_exp/2.0)
+        t_cen = datetime.datetime.strftime(t_cen, "%Y-%m-%dT%H:%M:%S.%f")
+        print(t_cen)
+        t_jd = utc2jd(t_cen)
+        
+        # Obtain coordinates of a minor planet at the central time
+        ra, dec = f_ra(t_jd), f_dec(t_jd)
+
+        # Convert equatorial coordinates to pixel coordinates
+        w = wcs(header=hdr)
+        x, y  = w.all_world2pix(ra, dec, 0)
+
+        # Shift length
+        dx, dy = cx-x, cy-y
+        dx, dy = int(dx), int(dy)
+        print(
+            f"  fits {idx+1:03d}: (cx, cy) = ({x:.1f}, {y:.1f}), "
+            f"(dx, dy) = ({dx:02d}, {dy:02d}) pix")
+
+        # Shift
+        tmp = np.roll(hdu[0].data, dy, axis=0)
+        tmp = np.roll(tmp, dx, axis=1)
+        # Save
+        cube.append(tmp)
+
+    img_shift = np.median(cube, axis=0)
     return img_shift
+
 

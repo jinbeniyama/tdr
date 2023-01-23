@@ -1,3 +1,3 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from triccs-data-reduction.common import *
+from .common import *
