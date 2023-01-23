@@ -113,10 +113,12 @@ if __name__ == "__main__":
         # Update header
         hdu[0].header.add_history(
             "[shift2d] (v_ra, v_dec) = ({v_ra}, {v_dec}) pixel/s")
+        str_mode = "vel"
 
     # Shift with wcs
     elif args.mode == "sidereal":
         img_shift = shift_sidereal(flist)
+        str_mode = "sid"
 
     # Shift for a certain target
     elif args.mode == "nonsidereal":
@@ -129,6 +131,7 @@ if __name__ == "__main__":
         # Update header
         hdu[0].header.add_history(
             f"[shift2d] Target {args.target}")
+        str_mode = "nonsid"
 
     # Update data
     hdu[0].data = img_shift
@@ -136,6 +139,6 @@ if __name__ == "__main__":
         out = args.out
     else:
         filename = os.path.basename(fi0).split(".")[0]
-        out = f"sa{filename}.fits"
+        out = f"s_{str_mode}_{filename}.fits"
     out = os.path.join(outdir, out)
     hdu.writeto(out, overwrite=True)
