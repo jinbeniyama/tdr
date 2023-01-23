@@ -332,9 +332,7 @@ def shift_nonsidereal(flist, hdr_kwd, target, loc):
         # Obtain pixel coordinates of the standard ra and dec (cra0 and cdec0)
         hdu = fits.open(fi)
         hdr = hdu[0].header
-        ny, nx = hdu[0].data.shape
-        # Central pixel
-        cx, cy = nx/2., ny/2.
+        w = wcs(header=hdr)
         # Starting
         t_str = hdr[hdr_kwd["datetime"]]
         try:
@@ -351,12 +349,15 @@ def shift_nonsidereal(flist, hdr_kwd, target, loc):
         # Obtain coordinates of a minor planet at the central time
         ra, dec = f_ra(t_jd), f_dec(t_jd)
 
+        # Standard pixel coordinates
+        if idx == 0:
+            x0, y0 = w.all_world2pix(ra, dec, 0)
+
         # Convert equatorial coordinates to pixel coordinates
-        w = wcs(header=hdr)
         x, y  = w.all_world2pix(ra, dec, 0)
 
         # Shift length
-        dx, dy = cx-x, cy-y
+        dx, dy = x0-x, y0-y
         dx, dy = int(dx), int(dy)
         print(
             f"  fits {idx+1:03d}: (cx, cy) = ({x:.1f}, {y:.1f}), "
