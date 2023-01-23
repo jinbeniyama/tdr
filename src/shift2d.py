@@ -3,9 +3,12 @@
 """
 Shift and stack multiple 2d fits files.
 Three modes are available:
-1. velocity (stack simply)
+1. velocity (stack simply, useful only for quick look maybe)
+   wcs of output fits is the same with the first fits.
 2. sidereal (raise SNR of stars)
+   wcs of output fits is the same with the first fits.
 3. nonsidereal (raise SNR of a target for non-sidereal tracking data)
+   wcs of output fits is the same with the first fits.
 
 OBS-TIME is necessary for 3. nonsidereal stacking.
 Please check OBS-TIME keyword.
@@ -81,9 +84,9 @@ if __name__ == "__main__":
     fi0 = flist[0]
     hdu = fits.open(fi0)
     # Update header
-    hdu[0].header.add_history("[shift2d] mode {args.mode}")
+    hdu[0].header.add_history(f"[shift2d] Mode {args.mode}")
     for fi in flist:
-        hdu[0].header.add_history("[shift2d] created from {fi}")
+        hdu[0].header.add_history(f"[shift2d] Created from {fi}")
 
     # Shift with velocity
     if args.mode == "velocity":
@@ -125,7 +128,7 @@ if __name__ == "__main__":
         img_shift = shift_nonsidereal(flist, hdr_kwd, args.target, loc)
         # Update header
         hdu[0].header.add_history(
-            "[shift2d] target {args.target}")
+            f"[shift2d] Target {args.target}")
 
     # Update data
     hdu[0].data = img_shift
