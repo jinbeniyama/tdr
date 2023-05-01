@@ -147,20 +147,20 @@ If you are going to use `Moving Object Photometry (movphot)`[(bitbucket)](https:
 Cutting non-sensitive pixels and masking nor well corrected pixels are done
 as well.
 
-![pixel map](/TriCCS_pixel_map_20210817.jpg){width=50%}
+![pixel map](/TriCCS_pixel_map_20210817.jpg){width=30%}
 
 ```
 [usage]
 # Split fits into multiple 2-d fits while cutting non-sensitive pixels
-mask_split.py (3-d fits)
+video2image.py (reduced 3-d fits)
 # + Masking not well corrected pixels (count is set to 1 for masked pixels)
-mask_split.py (3-d fits) --mask
+video2image.py (reduced 3-d fits) --mask
 
 [example]
 # Split fits into multiple 2-d fits while cutting non-sensitive pixels
-mask_split.py rTRCS00000010.fits 
+video2image.py rTRCS00000010.fits 
 # + Masking not well corrected pixels (count is set to 1 for masked pixels)
-mask_split.py rTRCS00000010.fits  --mask
+video2image.py rTRCS00000010.fits  --mask
 ```
 The masked and splitted frames hav suffix `ms` like `rTRCS00000010ms0001.fits`.
 Output fits examples are as follows (when the number of frames is 3).
@@ -193,4 +193,3 @@ Scripts are developed on `Python 3.7.10` and `NumPy 1.19.2`.
 
 ## LICENCE
 This software is released under the MIT License.
-
