@@ -154,7 +154,6 @@ def main(args):
         hdu[0].header.add_history(
             f"[video2image] original fits : {fitsname}")
 
-        
         # With stacking
         if args.stack:
             N_stack = int(args.stack)
