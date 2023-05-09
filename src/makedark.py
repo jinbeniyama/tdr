@@ -8,25 +8,6 @@ import numpy as np
 import astropy.io.fits as fits
 
 
-def chopped_mean(cube):
-    """ Calculate chopped mean along axis-zero
-  
-    Parameter
-    ---------
-      cube : numpy.ndarray
-        three-dimensional ndarray
-  
-    Return
-    ------
-      img : numpy.ndarray
-        stacked two-dimensional image
-    """
-    nz, ny, nx = cube.shape
-    img = np.sum(cube, axis=0)-np.max(cube, axis=0)
-    img = img/(nz-1.0)
-    return img
-
-
 def main(args):
     """
     This is the main function called by the `makedark` script.
@@ -40,8 +21,9 @@ def main(args):
     args : argparse.Namespace
       Arguments passed from the command-line as defined below.
     """
-    darkcube = []
+    dark_list = []
     for idx,dk in enumerate(args.dark):
+        print(f"  Read a dark frame {dk}")
         hdu = fits.open(dk)
         src = hdu[0]
         dark = src.data
@@ -57,21 +39,19 @@ def main(args):
             if nz == 1:
                 print("  Use single 3-d dark fits directory")
                 img = dark[0]
-            else:     
-                print("  Use chopped mean of 3-d dark fits")
-                img = chopped_mean(dark)
+                dark_list.append(img)
+            else: 
+                for z in range(nz):
+                    dark_list.append(dark[z])
         # 2d dark frames
         elif len(dark.shape)==2:
             print("  Use 2-d dark fits directly")
             img = dark
-  
-        # Add temporally cube 
-        darkcube.append(img)
-        print(f"  Read a dark frame {dk}")
-  
-    # Create a master dark from a dark cube
-    print(f"  Dimention of dark cube :{len(darkcube)}")
-    masterdark = np.median(darkcube, axis=0)
+            dark_list.append(img)
+
+    # Use median of all 2-d frames as master dark
+    print(f"  Dimention of dark frames :{len(dark_list)}")
+    masterdark = np.median(dark_list, axis=0)
     print(f"  Shape of a master dark :{masterdark.shape}")
   
     # Create 2-d master dark (Use a header of the first fits!)
