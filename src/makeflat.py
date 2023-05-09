@@ -77,54 +77,70 @@ def main(args):
     args : argparse.Namespace
       Arguments passed from the command-line as defined below.
     """
-    # Read a master dark frame
-    hdu_dark = fits.open(args.dark)
-    src_dark = hdu_dark[0]
-    dark = src_dark.data
-    assert len(dark.shape)==2, "A master dark frame should be 2-d fits."
-    print(f"  Read a dark frame {args.dark}")
+    # Exposure time of a single frame
+    key_exp1 = "EXPTIME1"
+
+    # Read master dark frame(s) with exposure tiems
+    d_dark = dict()
+    for d in args.dark:
+        hdu_dark = fits.open(d)
+        src_dark = hdu_dark[0]
+        dark = src_dark.data
+        assert len(dark.shape)==2, "A master dark frame should be 2-d fits."
+        hdr_dark = src_dark.header
+        texp = hdr_dark[key_exp1]
+        print(f"  Read a dark frame {d} with exposure time of {texp} s")
+        d_dark[texp] = dark
     
     # Read flat frames
-    N_flat = len(args.flat)
-    flatcube = []
+    flat_list = []
     for idx,fl in enumerate(args.flat):
-      hdu_flat = fits.open(fl)
-      src_flat = hdu_flat[0]
-      flat = src_flat.data
-      if idx==0:
-        hdr_flat = src_flat.header
-        hdr_fits = os.path.basename(fl)
-      
-      # 2d flat frame
-      if len(flat.shape)==2:
-        img = norm2dflat(flat, dark, args.norm)
-        # Add temporally cube 
-        flatcube.append(img)
-        
-      # 3d flat frames
-      elif len(flat.shape)==3:
-        img = norm3dflat(flat, dark, args.norm)
-        # Add temporally cube 
-        flatcube.append(img)
-      print(f"  Read a flat frame {fl}")
+        print(f"  Read a flat frame {fl}")
+        hdu_flat = fits.open(fl)
+        src_flat = hdu_flat[0]
+        # Exposure time
+        hdr = src_flat.header
+        texp = hdr[key_exp1]
+        flat = src_flat.data
+        # Save header and original fits file 
+        if idx==0:
+            hdr_flat = src_flat.header
+            fits0 = os.path.basename(fl)
+         
+        # Set dark 
+        dark_temp = d_dark[texp]
+
+        # 2d flat frame
+        if len(flat.shape)==2:
+            flat_temp = flat - dark_temp
+            flat_temp = flat_temp/np.median(flat_temp)
+            flat_list.append(flat_temp)
+        # 3d flat frames
+        elif len(flat.shape)==3:
+            nz = flat.shape[0]
+            for z in range(nz):
+                flat_temp = flat[z] - dark_temp
+                flat_temp = flat_temp/np.median(flat_temp)
+                flat_list.append(flat_temp)
 
     # Create a master flat from a flat cube
-    print(f"  Dimention of flat cube :{len(flatcube)}")
-    masterflat = np.median(flatcube, axis=0)
+    print(f"  Dimention of flat list :{len(flat_list)}")
+    masterflat = np.median(flat_list, axis=0)
     print(f"  Shape of a master flat :{masterflat.shape}")
     # Create 2-d master flat
     flat = fits.PrimaryHDU(data=masterflat, header=hdr_flat)
     # Add history
     hdr = flat.header
     hdr.add_history(
-      f"[makeflat] header info. is inherited from {hdr_fits}")
-    hdr.add_history(
-      f"[makeflat] dark frame : {os.path.basename(args.dark)}")
+      f"[makeflat] header info. is inherited from {fits0}")
+    for idx,d in enumerate(args.dark):
+        hdr.add_history(
+            f"[makeflat] dark frame {idx+1} : {os.path.basename(d)}")
     for idx,fl in enumerate(args.flat):
-      hdr.add_history(
-        f"[makeflat] flat frame {idx+1} : {os.path.basename(fl)}")
+        hdr.add_history(
+            f"[makeflat] flat frame {idx+1} : {os.path.basename(fl)}")
     hdr.add_history(
-      f"[makeflat] normalization : {args.norm}")
+      f"[makeflat] normalization : median")
 
     if args.out is None:
       out = f"f{os.path.basename(args.flat[0])}"
@@ -139,13 +155,10 @@ if __name__ == "__main__":
     parser = ap(description="Make a mater flat frame from flat frame(s)")
     parser.add_argument(
       "--flat", type=str, nargs="*", required=True,
-      help="a raw flat frame")
+      help="raw flat frames")
     parser.add_argument(
-      "--dark", type=str, required=True,
-      help="a master dark frame")
-    parser.add_argument(
-      "--norm", type=str, default="mean",
-      help="type of normalization (mean or median)")
+      "--dark", type=str, nargs="*", required=True,
+      help="master dark frames")
     parser.add_argument(
       "--out", type=str, default=None,
       help="output fits file")
