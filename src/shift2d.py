@@ -3,23 +3,29 @@
 """
 Shift and stack multiple 2d fits files.
 Three modes are available:
-1. velocity (stack simply, useful only for quick look maybe)
-   wcs of output fits is the same with the first fits.
-2. sidereal (raise SNR of stars)
-   wcs of output fits is the same with the first fits.
-3. nonsidereal (raise SNR of a target for non-sidereal tracking data)
-   wcs of output fits is the same with the first fits.
+1. velocity (stack simply with pixel coordinates, useful only for quick look maybe)
+    wcs of output fits is the same with the first fits
+2. sidereal (stack with wcs coordinates to raise SNR of 'stars')
+    wcs of output fits is the same with the first fits
+3. nonsidereal (stack with certain velocity to raise SNR of a moving object)
+    wcs of output fits is the same with the first fits
+    OBS-TIME is necessary for 3.
+    Please check OBS-TIME keyword.
 
-OBS-TIME is necessary for 3. nonsidereal stacking.
-Please check OBS-TIME keyword.
 Params: location, velocity, time
 Return: stacked fits, 3d fits 
+
+Note:
+    Exposure times of all input fits should be the same to calculate
+    UTC0 and UTC correctly.
 """
 from astropy.io import fits as fits
 import os 
 from argparse import ArgumentParser as ap
 import numpy as np
 import pandas as pd
+from astropy.time import Time
+import datetime
 
 from tdr import (
     instinfo, obtain_fitstime, shift_w_velocity, 
@@ -43,10 +49,10 @@ if __name__ == "__main__":
     # For velocity
     parser.add_argument(
         "--v_ra", type=float, default=0,
-        help="RA velocity in arcsec/ho (sky motion)")
+        help="RA velocity in arcsec/hr (sky motion)")
     parser.add_argument(
         "--v_dec", type=float, default=0,
-        help="DEC velocity in arcsec/ho (sky motion)")
+        help="DEC velocity in arcsec/hr (sky motion)")
     parser.add_argument(
         "--second", action="store_true", default=None,
         help="velocity in arcsec/s")
@@ -66,7 +72,7 @@ if __name__ == "__main__":
     outdir = args.outdir
     if not os.path.isdir(outdir):
         os.makedirs(outdir, exist_ok=True)
-    
+
 
     # Create a list as flist
     if args.fits:
@@ -78,7 +84,26 @@ if __name__ == "__main__":
             for line in f:
                 fi = line.strip("\n")
                 flist.append(fi)
-    print(f"Number of fits = {len(flist)}")
+    print(f"  Number of fits = {len(flist)}")
+
+
+    # Extract time to update it
+    key_utc = "UTC"
+    jd_list = []
+    for fi in flist:
+        hdu = fits.open(fi)
+        hdr = hdu[0].header
+        utc = hdr[key_utc]
+        t = Time(str(utc), format='isot', scale='utc')
+        # Convert to JD
+        jd = t.jd
+        jd_list.append(jd)
+    # Calculate median jd
+    jd_median = np.median(jd_list)
+    jd_mean = np.mean(jd_list)
+    assert jd_median == jd_mean, "Update the code."
+    
+
 
     # Open the first fits
     fi0 = flist[0]
@@ -135,10 +160,38 @@ if __name__ == "__main__":
 
     # Update data
     hdu[0].data = img_shift
+    Nfits = len(flist)
+    hdu[0].header.add_history(f"[shift2d] Number of stacked images {Nfits}")
+
+    # Update Time
+    hdu[0].header["JD_MED"] = (jd_median, "Median JD")
+    hdu[0].header["JD_MEAN"] = (jd_mean, "Mean JD")
+    # Convert to UTC
+    t_median = Time(str(jd_median), format='jd', scale='utc')
+    utc_median = t_median.datetime
+    utc_median = datetime.datetime.strftime(utc_median, "%Y-%m-%dT%H:%M:%S.%f")
+    t_mean = Time(str(jd_mean), format='jd', scale='utc')
+    utc_mean = t_mean.datetime
+    utc_mean = datetime.datetime.strftime(utc_mean, "%Y-%m-%dT%H:%M:%S.%f")
+    hdu[0].header["UTC_MED"] = (utc_median, "Median UTC")
+    hdu[0].header["UTC_MEAN"] = (utc_mean, "Mean UTC")
+    # Use median
+    # Note: The time between frames should be the same.
+    #       Otherwise care should be taken when using the inherited time here.
+    hdu[0].header[key_utc] = utc_median
+
+    # Update single exposure time (EXPTIME1) and time between frames (TFRAME)
+    key_exp1, key_tframe = "EXPTIME1", "TFRAME"
+    t_exp = hdu[0].header[key_exp1]
+    t_exp_total = Nfits * t_exp
+    hdu[0].header[key_exp1] = t_exp_total
+    hdu[0].header[key_tframe] = t_exp_total
+
+
     if args.out:
         out = args.out
     else:
         filename = os.path.basename(fi0).split(".")[0]
-        out = f"s_{str_mode}_{filename}.fits"
+        out = f"{str_mode}_{filename}.fits"
     out = os.path.join(outdir, out)
     hdu.writeto(out, overwrite=True)
