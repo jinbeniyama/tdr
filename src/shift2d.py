@@ -38,7 +38,9 @@ if __name__ == "__main__":
         "mode", choices=["velocity", "sidereal", "nonsidereal"],
         help="mode of shift")
     parser.add_argument(
-        "inst", choices=["ishigaki", "okayama", "akeno", "saitama", "triccs"],
+        "--inst", 
+        choices=["ishigaki", "okayama", "akeno", "saitama", "triccs"], 
+        default="triccs",
         help="instrument")
     parser.add_argument(
         "--fits", type=str, nargs="*", 
