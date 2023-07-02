@@ -101,7 +101,11 @@ if __name__ == "__main__":
     # Calculate median jd
     jd_median = np.median(jd_list)
     jd_mean = np.mean(jd_list)
-    assert jd_median == jd_mean, "Update the code."
+    print(f"jd_mean = {jd_mean}")
+    print(f"jd_median = {jd_median}")
+    if jd_median!=jd_mean:
+        print("JD_median and JD_mean are not the same.")
+        print("JD_median is saved in the header.")
     
 
 
