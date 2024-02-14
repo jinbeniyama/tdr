@@ -133,7 +133,14 @@ def main(args):
         # For new one 2021.08-
         # GEXP-STR= '2021-10-27T20:10:50.371615' / GPS time at exposure start
         t0 = hdr["GEXP-STR"] 
-        t0_dt = datetime.datetime.strptime(t0, "%Y-%m-%dT%H:%M:%S.%f")
+        try:
+            t0_dt = datetime.datetime.strptime(t0, "%Y-%m-%dT%H:%M:%S.%f")
+
+        # For 2024.02-
+        # in case
+        # GEXP-STR= '1970-01-01T00:00:00' / GPS time at exposure start
+        except:
+            t0_dt = datetime.datetime.strptime(t0, "%Y-%m-%dT%H:%M:%S")
 
         # Some headers below are not recomended !
         # DATE-OBS= '2021-10-15'         / Observation start date (yyyy-mm-dd)
