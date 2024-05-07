@@ -222,7 +222,7 @@ def shift_w_velocity(flist, hdr_kwd, v_ra, v_dec):
     return img_shift
 
 
-def shift_sidereal(flist):
+def shift_sidereal(flist, mode="median"):
     """
     Shift 2d-fits files with velocity in pixel/s.
 
@@ -230,8 +230,8 @@ def shift_sidereal(flist):
     ----------
     flist : array-like
         list of fits files
-    hdr_kwd : dictionary
-        header keywords
+    mode : str, optional
+        stacking mode (mean, median, min, max)
 
     Return
     ------
@@ -269,8 +269,15 @@ def shift_sidereal(flist):
         tmp = np.roll(tmp, dx, axis=1)
         # Save
         cube.append(tmp)
-
-    img_shift = np.median(cube, axis=0)
+    
+    if mode == "mean":
+        img_shift = np.median(cube, axis=0)
+    elif mode == "median":
+        img_shift = np.mean(cube, axis=0)
+    elif mode == "min":
+        img_shift = np.min(cube, axis=0)
+    elif mode == "max":
+        img_shift = np.max(cube, axis=0)
     return img_shift
 
 

@@ -58,6 +58,9 @@ if __name__ == "__main__":
     parser.add_argument(
         "--second", action="store_true", default=None,
         help="velocity in arcsec/s")
+    parser.add_argument(
+        "--mode", type=str, default="median", 
+        help="Stacking mode")
     # For nonsidereal
     parser.add_argument(
         "--target", type=str, default=None, 
@@ -148,7 +151,7 @@ if __name__ == "__main__":
 
     # Shift with wcs
     elif args.mode == "sidereal":
-        img_shift = shift_sidereal(flist)
+        img_shift = shift_sidereal(flist, args.mode)
         str_mode = "sid"
 
     # Shift for a certain target
