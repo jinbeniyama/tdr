@@ -230,8 +230,6 @@ def shift_sidereal(flist, stackmode="median"):
     ----------
     flist : array-like
         list of fits files
-    hdr_kwd : dictionary
-        header keywords
     stackmode : str, optional
         stacking mode (median or mean)
 
