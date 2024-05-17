@@ -222,7 +222,7 @@ def shift_w_velocity(flist, hdr_kwd, v_ra, v_dec):
     return img_shift
 
 
-def shift_sidereal(flist):
+def shift_sidereal(flist, stackmode="median"):
     """
     Shift 2d-fits files with velocity in pixel/s.
 
@@ -232,6 +232,8 @@ def shift_sidereal(flist):
         list of fits files
     hdr_kwd : dictionary
         header keywords
+    stackmode : str, optional
+        stacking mode (median or mean)
 
     Return
     ------
@@ -269,12 +271,17 @@ def shift_sidereal(flist):
         tmp = np.roll(tmp, dx, axis=1)
         # Save
         cube.append(tmp)
-
-    img_shift = np.median(cube, axis=0)
+    
+    if stackmode == "median":
+        img_shift = np.median(cube, axis=0)
+    elif stackmode == "mean":
+        img_shift = np.mean(cube, axis=0)
+    else:
+        assert False, "Invalid stackmode."
     return img_shift
 
 
-def shift_nonsidereal(flist, hdr_kwd, target, loc):
+def shift_nonsidereal(flist, hdr_kwd, target, loc, stackmode="median"):
     """
     Shift 2d-fits files a target name.
     Move target to a center.
@@ -289,6 +296,8 @@ def shift_nonsidereal(flist, hdr_kwd, target, loc):
         target name
     loc : str
         Minor Planet Center observatory code
+    stackmode : str, optional
+        stacking mode (median or mean)
 
     Return
     ------
@@ -369,7 +378,12 @@ def shift_nonsidereal(flist, hdr_kwd, target, loc):
         # Save
         cube.append(tmp)
 
-    img_shift = np.median(cube, axis=0)
+    if stackmode == "median":
+        img_shift = np.median(cube, axis=0)
+    elif stackmode == "mean":
+        img_shift = np.mean(cube, axis=0)
+    else:
+        assert False, "Invalid stackmode."
     return img_shift
 
 

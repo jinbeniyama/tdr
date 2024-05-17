@@ -38,6 +38,9 @@ if __name__ == "__main__":
         "mode", choices=["velocity", "sidereal", "nonsidereal"],
         help="mode of shift")
     parser.add_argument(
+        "--stackmode", type=str, default="median",
+        help="mode of stacnking (median or mean)")
+    parser.add_argument(
         "--inst", 
         choices=["ishigaki", "okayama", "akeno", "saitama", "triccs"], 
         default="triccs",
@@ -148,7 +151,7 @@ if __name__ == "__main__":
 
     # Shift with wcs
     elif args.mode == "sidereal":
-        img_shift = shift_sidereal(flist)
+        img_shift = shift_sidereal(flist, args.stackmode)
         str_mode = "sid"
 
     # Shift for a certain target
@@ -158,7 +161,7 @@ if __name__ == "__main__":
         print(f"Instrument  : {args.inst}")
         print(f"Header info : {hdr_kwd}")
         print(f"Pixel scale : {p_scale} arcsec/pixel")
-        img_shift = shift_nonsidereal(flist, hdr_kwd, args.target, loc)
+        img_shift = shift_nonsidereal(flist, hdr_kwd, args.target, loc, args.stackmode)
         # Update header
         hdu[0].header.add_history(
             f"[shift2d] Target {args.target}")
