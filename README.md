@@ -10,6 +10,9 @@ Though optimized for Seimei/TriCCS,
 you can apply it for imaging data taken with other high-speed cameras
 (Tomo-e Gozen etc.).
 
+
+Stackmode in shift2d may affect the photometric results. Please carefully check it.
+
 ### Procedures
 1-1. Calibration (dark subtraction, flat-field correction)
 
