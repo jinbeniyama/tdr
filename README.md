@@ -11,7 +11,9 @@ you can apply it for imaging data taken with other high-speed cameras
 (Tomo-e Gozen etc.).
 
 
-Stackmode in shift2d may affect the photometric results. Please carefully check it.
+Stackmode in shift2d, mean or median, may affect the photometric results. Please carefully check it.
+J.B. used median mode for 2015 RN35 (Beniyama et al., 2023c) 
+and mean mode for 2001 QJ142 (Beniyama et al. 2024).
 
 ### Procedures
 1-1. Calibration (dark subtraction, flat-field correction)
