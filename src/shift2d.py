@@ -51,6 +51,9 @@ if __name__ == "__main__":
     parser.add_argument(
         "--flist", type=str, 
         help="fits list text file")
+    parser.add_argument(
+        "--fdir", type=str, default=None,
+        help="fits directory for flist")
     # For velocity
     parser.add_argument(
         "--v_ra", type=float, default=0,
@@ -91,6 +94,10 @@ if __name__ == "__main__":
             flist = []
             for line in f:
                 fi = line.strip("\n")
+                if args.fdir:
+                    fi = f"{args.fdir}/{fi}"
+                else:
+                    pass
                 flist.append(fi)
     print(f"  Number of fits = {len(flist)}")
 
