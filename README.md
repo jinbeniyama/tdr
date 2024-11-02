@@ -103,8 +103,7 @@ makeflat.py --flat (3-d flat frames) --dark (2-d master dark)
 makeflat.py --flat TRCS00000040.fits TRCS00000050.fits --dark dTRCS00000020.fits
 ```
 
-Finally, reduce an object frame using both master dark and flat frames. 
-
+Reduce an object frame using both master dark and flat frames. 
 The reduced object frame has prefix `r` like `rTRCS00000010.fits`.
 
 ```
@@ -117,9 +116,22 @@ reduce.py --obj (3-d object) --dark (2-d master dark) --flat (2-d master flat)
 reduce.py --obj TRCS00000010.fits --dark dTRCS00000020.fits --flat fTRCS00000040.fits
 ```
 
+Finally, make 2-d fits from 3-d fits.
+The resulting object frame is like `rTRCS00000010ms0005.fits`, in which 
+`ms0005` means that this is the 5th frame if the original reduced fits.
+
+```
+[usage]
+video2image.py (3-d reduced object)
+
+[example]
+video2image.py rTRCS00000010.fits
+```
+
+
 ### 2. Stacking
 #### 2.1. Pixed based stacking
-
+Do stacking (i.e., make 2-d fits from 3-d fits) using pixel cooridnates.
 Output fits have format like 
 `maxrTRCS00000010.fits` (max),
 `minrTRCS00000010.fits` (min),
@@ -149,6 +161,23 @@ stackfits.py rTRCS00000010.fits  median
 ```
 
 #### 2.2. WSC based stacking
+Do stacking (i.e., make 2-d fits from 3-d fits) using World Coordinate System (WCS).
+I am sorry that you have to prepare corrected fits by yourselves using such as astrometry.net.
+
+```
+[usage]
+# Maximum stacking
+stackfits.py (3-d reduced fits) max
+# Minimum stacking
+stackfits.py (3-d reduced fits) min
+
+[example]
+# Maximum stacking
+stackfits.py rTRCS00000010.fits  max
+# Minimum stacking
+stackfits.py rTRCS00000010.fits  median
+```
+
 
 ### 3. Masking and splitting
 If you are going to use `Moving Object Photometry (movphot)`[(bitbucket)](https://bitbucket.org/jin_beniyama/movphot/src/master/) for photometry,
