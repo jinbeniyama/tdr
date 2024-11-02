@@ -102,7 +102,8 @@ def main(args=None):
     # Update header keywords
     key_tframe0 = "TFRAME"
     key_texp0   = "EXPTIME1"
-    key_fps0    = "DATA-FPS"
+    # Previously this was DATE-FPS (<< 2024-10)
+    key_fps0    = "DAT-FPS"
     hdr[key_tframe0] = tframe
     hdr[key_texp0] = exp1
     hdr[key_fps0] = fps
