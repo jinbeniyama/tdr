@@ -75,9 +75,6 @@ def main(args=None):
     # Extract filename
     filename = os.path.basename(args.fits)
  
-
-    # Now not available since header keywords are changed......
-    assert False, "check header keywords"
     hdu = fits.open(args.fits)
     hdr = hdu[0].header
     cube = hdu[0].data
@@ -101,10 +98,14 @@ def main(args=None):
       f"[stack] created from {filename}")
     hdr.add_history(
       f"[stack] type {args.type}")
+
     # Update header keywords
-    hdr["TFRAME"] = tframe
-    hdr["EXPTIME1"] = exp1
-    hdr["DATA-FPS"] = fps
+    key_tframe0 = "TFRAME"
+    key_texp0   = "EXPTIME1"
+    key_fps0    = "DATA-FPS"
+    hdr[key_tframe0] = tframe
+    hdr[key_texp0] = exp1
+    hdr[key_fps0] = fps
   
     # Write new fits 
     hdu[0].data = img
