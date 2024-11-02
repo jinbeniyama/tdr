@@ -25,7 +25,7 @@ and mean mode for 2001 QJ142 (Beniyama et al. 2024).
 
 4. Common ID search
 
-X. Spectroscopy with Pypelt
+999. Spectroscopy with Pypelt
 
 
 ## Installing
@@ -162,19 +162,20 @@ stackfits.py rTRCS00000010.fits  median
 #### 2.2. WSC based stacking
 Do stacking (i.e., make 2-d fits from 3-d fits) using World Coordinate System (WCS).
 I am sorry that you have to prepare corrected fits by yourselves using such as astrometry.net.
+Here I assume the corrected fits is like `rTRCS00000010w.fits`.
 
 ```
 [usage]
-# Maximum stacking
-stackfits.py (3-d reduced fits) max
-# Minimum stacking
-stackfits.py (3-d reduced fits) min
+# Sidereal mean stacking
+shift2d.py sidereal --stackmode mean --fits (multiple WCS correctd fits files to be stacked)
+# Nonsidereal median stacking
+shift2d.py nonsidereal --stackmode median --fits (multiple WCS corrected fits files to be stacked) --target (name of moving object)
 
 [example]
-# Maximum stacking
-stackfits.py rTRCS00000010.fits  max
-# Minimum stacking
-stackfits.py rTRCS00000010.fits  median
+# Sidereal mean stacking
+shift2d.py sidereal --stackmode mean --fits rTRCS00*w.fits
+# Nonsidereal median stacking using velocities of Phaethon
+shift2d.py nonsidereal --stackmode median --fits rTRCS00*w.fits --target "Phaethon"
 ```
 
 
