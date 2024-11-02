@@ -118,6 +118,8 @@ reduce.py --obj TRCS00000010.fits --dark dTRCS00000020.fits --flat fTRCS00000040
 ```
 
 ### 2. Stacking
+#### 2.1. Pixed based stacking
+
 Output fits have format like 
 `maxrTRCS00000010.fits` (max),
 `minrTRCS00000010.fits` (min),
@@ -145,6 +147,8 @@ stackfits.py rTRCS00000010.fits  mean
 # Median stacking
 stackfits.py rTRCS00000010.fits  median
 ```
+
+#### 2.2. WSC based stacking
 
 ### 3. Masking and splitting
 If you are going to use `Moving Object Photometry (movphot)`[(bitbucket)](https://bitbucket.org/jin_beniyama/movphot/src/master/) for photometry,
