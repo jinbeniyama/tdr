@@ -12,8 +12,8 @@ you can apply it for imaging data taken with other high-speed cameras
 
 
 Stackmode in shift2d, mean or median, may affect the photometric results. Please carefully check it.
-J.B. used median mode for 2015 RN35 (Beniyama et al., 2023c) 
-and mean mode for 2001 QJ142 (Beniyama et al. 2024).
+J.B. used median mode for 2015 RN35 [Beniyama et al., 2023, AJ](https://ui.adsabs.harvard.edu/abs/2023AJ....166..229B/abstract)
+and mean mode for 2001 QJ142 [Beniyama et al. 2024, A&A](https://ui.adsabs.harvard.edu/abs/2024A%26A...690A.180B/abstract).
 
 ### Procedures
 1. Calibration (dark subtraction, flat-field correction, and also masking, and splitting, which are mainly for photometry using `Moving Object Photometry (movphot)` ([bitbucket](https://bitbucket.org/jin_beniyama/movphot/src/master/)) )
@@ -170,7 +170,7 @@ stackfits.py rTRCS00000010.fits  median
 Do stacking (i.e., make 2-d fits from multiple 2-d fits) using World Coordinate System (WCS).
 I am sorry that you have to prepare corrected fits by yourselves using such as [astrometry.net](https://astrometry.net/)) 
 Here I assume the corrected fits is like `rTRCS00000010w.fits`.
-Example of resulting images are shown in Figure 1 
+Example of resulting images are shown in Figure 1 of [Beniyama et al., 2023, AJ](https://ui.adsabs.harvard.edu/abs/2023AJ....166..229B/abstract).
 
 ```
 [usage]
