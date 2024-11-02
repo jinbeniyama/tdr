@@ -16,14 +16,11 @@ J.B. used median mode for 2015 RN35 (Beniyama et al., 2023c)
 and mean mode for 2001 QJ142 (Beniyama et al. 2024).
 
 ### Procedures
-1. Calibration (dark subtraction, flat-field correction)
+1. Calibration (dark subtraction, flat-field correction, and also masking, and splitting, which are mainly for photometry using `Moving Object Photometry (movphot)` ([bitbucket](https://bitbucket.org/jin_beniyama/movphot/src/master/)) )
 
-2. Stacking fits by mean, median, etc.
+2. Stacking fits by mean, median, sidereal, nonsidereal, etc.
 
-3. Masking and splitting
-(only for photometry using `Moving Object Photometry (movphot)` ([bitbucket](https://bitbucket.org/jin_beniyama/movphot/src/master/)) )
-
-4. Common ID search
+3. Common ID search (optional)
 
 999. Spectroscopy with Pypelt
 
@@ -115,18 +112,28 @@ reduce.py --obj (3-d object) --dark (2-d master dark) --flat (2-d master flat)
 reduce.py --obj TRCS00000010.fits --dark dTRCS00000020.fits --flat fTRCS00000040.fits
 ```
 
-Finally, make 2-d fits from 3-d fits.
+Finally, make multiple 2-d fits from 3-d fits. (Or you can go to 2.1. Pixed based stacking skipping this process.)
+If you are going to use `Moving Object Photometry (movphot)`[(bitbucket)](https://bitbucket.org/jin_beniyama/movphot/src/master/) for photometry,
+3-d fits cube should be split into multiple 2-d fits.
+Cutting non-sensitive pixels and masking for not well corrected pixels are done as well.
 The resulting object frame is like `rTRCS00000010ms0005.fits`, in which 
 `ms0005` means that this is the 5th frame if the original reduced fits.
 
+![pixel map](/TriCCS_pixel_map_20210817.jpg){width=30%}
+
 ```
 [usage]
-video2image.py (3-d reduced object)
+# Split fits into multiple 2-d fits while cutting non-sensitive pixels
+video2image.py (reduced 3-d fits)
+# + Masking not well corrected pixels (count is set to 1 for masked pixels)
+video2image.py (reduced 3-d fits) --mask
 
 [example]
-video2image.py rTRCS00000010.fits
+# Split fits into multiple 2-d fits while cutting non-sensitive pixels
+video2image.py rTRCS00000010.fits 
+# + Masking not well corrected pixels (count is set to 1 for masked pixels)
+video2image.py rTRCS00000010.fits  --mask
 ```
-
 
 ### 2. Stacking
 #### 2.1. Pixed based stacking
@@ -160,9 +167,10 @@ stackfits.py rTRCS00000010.fits  median
 ```
 
 #### 2.2. WSC based stacking
-Do stacking (i.e., make 2-d fits from 3-d fits) using World Coordinate System (WCS).
-I am sorry that you have to prepare corrected fits by yourselves using such as astrometry.net.
+Do stacking (i.e., make 2-d fits from multiple 2-d fits) using World Coordinate System (WCS).
+I am sorry that you have to prepare corrected fits by yourselves using such as [astrometry.net](https://astrometry.net/)) 
 Here I assume the corrected fits is like `rTRCS00000010w.fits`.
+Example of resulting images are shown in Figure 1 
 
 ```
 [usage]
@@ -179,36 +187,7 @@ shift2d.py nonsidereal --stackmode median --fits rTRCS00*w.fits --target "Phaeth
 ```
 
 
-### 3. Masking and splitting
-If you are going to use `Moving Object Photometry (movphot)`[(bitbucket)](https://bitbucket.org/jin_beniyama/movphot/src/master/) for photometry,
-3-d fits cube should be split into multiple 2-d fits.
-Cutting non-sensitive pixels and masking nor well corrected pixels are done
-as well.
-
-![pixel map](/TriCCS_pixel_map_20210817.jpg){width=30%}
-
-```
-[usage]
-# Split fits into multiple 2-d fits while cutting non-sensitive pixels
-video2image.py (reduced 3-d fits)
-# + Masking not well corrected pixels (count is set to 1 for masked pixels)
-video2image.py (reduced 3-d fits) --mask
-
-[example]
-# Split fits into multiple 2-d fits while cutting non-sensitive pixels
-video2image.py rTRCS00000010.fits 
-# + Masking not well corrected pixels (count is set to 1 for masked pixels)
-video2image.py rTRCS00000010.fits  --mask
-```
-The masked and splitted frames hav suffix `ms` like `rTRCS00000010ms0001.fits`.
-Output fits examples are as follows (when the number of frames is 3).
-
-- `rTRCS00000010ms0001.fits`
-- `rTRCS00000010ms0002.fits`
-- `rTRCS00000010ms0003.fits`
-
-
-### 4. Common ID search
+### 3. Common ID search (optional)
 If the wcs pasting failed for some fits,
 it is necessary to extract common ID fits.
 
