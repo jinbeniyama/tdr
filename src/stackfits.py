@@ -14,7 +14,9 @@ import astropy.io.fits as fits
 hdr_kwd = {
   "tframe": "TFRAME", 
   "exp1": "EXPTIME1",
-  "fps": "DATA-FPS"
+  # Previously this was DATE-FPS (<< 2024-10)
+  #"fps": "DATA-FPS"
+  "fps": "DAT-FPS"
   }
 
 
@@ -100,13 +102,9 @@ def main(args=None):
       f"[stack] type {args.type}")
 
     # Update header keywords
-    key_tframe0 = "TFRAME"
-    key_texp0   = "EXPTIME1"
-    # Previously this was DATE-FPS (<< 2024-10)
-    key_fps0    = "DAT-FPS"
-    hdr[key_tframe0] = tframe
-    hdr[key_texp0] = exp1
-    hdr[key_fps0] = fps
+    hdr[hdr_kwd["tframe"]] = tframe
+    hdr[hdr_kwd["exp1"]] = exp1
+    hdr[hdr_kwd["fps"]] = fps
   
     # Write new fits 
     hdu[0].data = img
