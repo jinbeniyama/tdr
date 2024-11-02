@@ -16,17 +16,16 @@ J.B. used median mode for 2015 RN35 (Beniyama et al., 2023c)
 and mean mode for 2001 QJ142 (Beniyama et al. 2024).
 
 ### Procedures
-1-1. Calibration (dark subtraction, flat-field correction)
+1. Calibration (dark subtraction, flat-field correction)
 
-1-2. Stacking fits by mean, median, etc.
+2. Stacking fits by mean, median, etc.
 
-1-3. Masking and splitting
+3. Masking and splitting
 (only for photometry using `Moving Object Photometry (movphot)` ([bitbucket](https://bitbucket.org/jin_beniyama/movphot/src/master/)) )
 
-1-4. Common ID search
+4. Common ID search
 
-
-2-1. Spectroscopy with Pypelt
+X. Spectroscopy with Pypelt
 
 
 ## Installing
