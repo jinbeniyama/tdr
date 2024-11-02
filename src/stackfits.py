@@ -75,6 +75,8 @@ def main(args=None):
     # Extract filename
     filename = os.path.basename(args.fits)
  
+
+    # Now not available since header keywords are changed......
     assert False, "check header keywords"
     hdu = fits.open(args.fits)
     hdr = hdu[0].header
