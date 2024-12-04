@@ -265,10 +265,24 @@ def shift_sidereal(flist, stackmode="median"):
             f"(dx, dy) = ({dx:02d}, {dy:02d}) pix")
 
         # Shift
-        tmp = np.roll(hdu[0].data, dy, axis=0)
+        img = hdu[0].data
+        ny0, nx0 = img.shape
+        if (ny0 == ny) & (nx0 == nx):
+            pass
+        else:
+            # Skip unusual shape (for DECam)
+            continue
+
+        tmp = np.roll(img, dy, axis=0)
+        print(tmp.shape)
         tmp = np.roll(tmp, dx, axis=1)
         # Save
         cube.append(tmp)
+
+        if idx == 0:
+            # Save shape since some DECam image has unusual shape......
+            ny, nx = tmp.shape
+
     
     if stackmode == "median":
         img_shift = np.median(cube, axis=0)
