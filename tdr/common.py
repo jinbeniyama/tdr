@@ -120,6 +120,16 @@ def instinfo(inst):
         p_scale = 0.35
         loc = 371
 
+    elif inst == "DECam":
+        hdr_kwd = dict(
+            datetime="DATE-OBS", date="DATE-OBS", time="DATE-OBS",
+            exp="EXPTIME", gain=None)
+        # 0.27 arcsec/pixel from fitsheader 
+        p_scale = 0.27
+        # Cerro Tololo-Dark Energy Camera (DECam) of The Dark Energy Survey, also see #807
+        # from wikipedia
+        loc = "W84"
+
     return hdr_kwd, p_scale, loc
 
 
@@ -333,14 +343,14 @@ def shift_nonsidereal(flist, hdr_kwd, target, loc, stackmode="median"):
     # Ending time
     # +60 is necesary for ephemeris with 1min step to avoid 
     #   'ValueError: A value in x_new is above the interpolation range.'
-    t1_end = t1_str + datetime.timedelta(seconds=(t_exp+60))
+    t1_end = t1_str + datetime.timedelta(minutes=(+30))
     t1_end = datetime.datetime.strftime(t1_end, "%Y-%m-%dT%H:%M:%S.%f")
     print(t1_str)
     print(t1_end)
     eph = calc_JPLephem(target, t0_str, t1_end, "1m", obscode=loc)
     jd_list, ra_list, dec_list = eph["datetime_jd"].tolist(), eph["RA"].tolist(), eph["DEC"].tolist()
-    print(f"np.min(jd_list)")
-    print(f"np.max(jd_list)")
+    print(f"{np.min(jd_list)}")
+    print(f"{np.max(jd_list)}")
     # To calculate ra and dec from jd
     f_ra = interpolate.interp1d(jd_list, ra_list, kind='linear')
     f_dec = interpolate.interp1d(jd_list, dec_list, kind='linear')
@@ -366,6 +376,7 @@ def shift_nonsidereal(flist, hdr_kwd, target, loc, stackmode="median"):
         t_cen = datetime.datetime.strftime(t_cen, "%Y-%m-%dT%H:%M:%S.%f")
         print(t_cen)
         t_jd = utc2jd(t_cen)
+        print(t_jd)
         
         # Obtain coordinates of a minor planet at the central time
         ra, dec = f_ra(t_jd), f_dec(t_jd)
