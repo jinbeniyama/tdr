@@ -136,7 +136,6 @@ def main(args):
     for idx,d in enumerate(args.dark):
         hdr.add_history(
             f"[makeflat] dark frame {idx+1} : {os.path.basename(d)}")
-    for idx,fl in enumerate(args.flat):
         hdr.add_history(
             f"[makeflat] flat frame {idx+1} : {os.path.basename(fl)}")
     hdr.add_history(

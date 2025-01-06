@@ -14,7 +14,9 @@ import astropy.io.fits as fits
 hdr_kwd = {
   "tframe": "TFRAME", 
   "exp1": "EXPTIME1",
-  "fps": "DATA-FPS"
+  # Previously this was DATE-FPS (<< 2024-10)
+  #"fps": "DATA-FPS"
+  "fps": "DAT-FPS"
   }
 
 
@@ -75,7 +77,6 @@ def main(args=None):
     # Extract filename
     filename = os.path.basename(args.fits)
  
-    assert False, "check header keywords"
     hdu = fits.open(args.fits)
     hdr = hdu[0].header
     cube = hdu[0].data
@@ -99,10 +100,11 @@ def main(args=None):
       f"[stack] created from {filename}")
     hdr.add_history(
       f"[stack] type {args.type}")
+
     # Update header keywords
-    hdr["TFRAME"] = tframe
-    hdr["EXPTIME1"] = exp1
-    hdr["DATA-FPS"] = fps
+    hdr[hdr_kwd["tframe"]] = tframe
+    hdr[hdr_kwd["exp1"]] = exp1
+    hdr[hdr_kwd["fps"]] = fps
   
     # Write new fits 
     hdu[0].data = img

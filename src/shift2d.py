@@ -42,12 +42,15 @@ if __name__ == "__main__":
         help="mode of stacnking (median or mean)")
     parser.add_argument(
         "--inst", 
-        choices=["ishigaki", "okayama", "akeno", "saitama", "triccs"], 
+        choices=["ishigaki", "okayama", "akeno", "saitama", "triccs", "DECam"], 
         default="triccs",
         help="instrument")
     parser.add_argument(
         "--fits", type=str, nargs="*", 
         help="fits to be shifted")
+    parser.add_argument(
+        "--fdir", type=str, default=".",
+        help="directory with input fits files")
     parser.add_argument(
         "--flist", type=str, 
         help="fits list text file")
@@ -100,10 +103,24 @@ if __name__ == "__main__":
                     pass
                 flist.append(fi)
     print(f"  Number of fits = {len(flist)}")
-
-
+    
+    # Add directory
+    if args.fdir != ".":
+        flist = [os.path.join(args.fdir, x) for x in flist]
+    
+    # Instrument
+    inst = args.inst
+ 
     # Extract time to update it
-    key_utc = "UTC"
+    if inst == "triccs":
+        key_utc = "UTC"
+        key_exp1, key_tframe = "EXPTIME1", "TFRAME"
+    elif inst == "DECam":
+        key_utc = "DATE-OBS"
+        key_exp1, key_tframe = "EXPTIME", "TFRAME"
+    else:
+        assert False, "Update the code"
+
     jd_list = []
     for fi in flist:
         hdu = fits.open(fi)
@@ -200,11 +217,12 @@ if __name__ == "__main__":
     hdu[0].header[key_utc] = utc_median
 
     # Update single exposure time (EXPTIME1) and time between frames (TFRAME)
-    key_exp1, key_tframe = "EXPTIME1", "TFRAME"
     t_exp = hdu[0].header[key_exp1]
     t_exp_total = Nfits * t_exp
     hdu[0].header[key_exp1] = t_exp_total
-    hdu[0].header[key_tframe] = t_exp_total
+    # Useless? Save for the consistency
+    if inst == "TriCCS":
+        hdu[0].header[key_tframe] = t_exp_total
 
 
     if args.out:
