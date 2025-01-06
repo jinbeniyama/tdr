@@ -49,6 +49,9 @@ if __name__ == "__main__":
         "--fits", type=str, nargs="*", 
         help="fits to be shifted")
     parser.add_argument(
+        "--fdir", type=str, default=".",
+        help="directory with input fits files")
+    parser.add_argument(
         "--flist", type=str, 
         help="fits list text file")
     # For velocity
@@ -93,7 +96,11 @@ if __name__ == "__main__":
                 fi = line.strip("\n")
                 flist.append(fi)
     print(f"  Number of fits = {len(flist)}")
-     
+    
+    # Add directory
+    if args.fdir != ".":
+        flist = [os.path.join(args.fdir, x) for x in flist]
+    
     # Instrument
     inst = args.inst
  
