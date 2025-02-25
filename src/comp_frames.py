@@ -33,17 +33,29 @@ def main(args):
   
     # Cut and calculate std after flat
     div = flat1/flat2
+    # Sub
+    sub = flat1 - flat2
+    sub_min, sub_max, sub_std = np.min(sub), np.max(sub), np.std(sub)
+    print(sub_min, sub_max, sub_std)
+    sub_vmin, sub_vmax = -5*sub_std, 5*sub_std
 
     # Plot histograms
-    fig = plt.figure(figsize=(12, 6))
-    ax1 = fig.add_axes([0.15, 0.15, 0.75, 0.75])
-    
-    label = "flux1/flux2"
-    bins = 100
-    im = ax1.imshow(div, label=label, vmin=args.vmin, vmax=args.vmax, cmap=args.cmap)
-    fig.colorbar(im, label="Normalized count")
+    fig = plt.figure(figsize=(12, 12))
+    ax1 = fig.add_axes([0.15, 0.55, 0.75, 0.40])
+    ax2 = fig.add_axes([0.15, 0.05, 0.75, 0.40])
+
+    label = "frame1/frame2"
+    im1 = ax1.imshow(div, vmin=args.vmin, vmax=args.vmax, cmap=args.cmap, label=label)
+    fig.colorbar(im1, label="Normalized count")
+
+    label = "frame1 - frame2"
+    im2 = ax2.imshow(sub, cmap=args.cmap, label=label, vmin=sub_vmin, vmax=sub_vmax)
+    fig.colorbar(im2, label="Subtracted count")
      
+
     ax1.legend()
+    ax2.legend()
+
     plt.savefig(args.out)
  
 
