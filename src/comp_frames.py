@@ -40,7 +40,8 @@ def main(args):
     
     label = "flux1/flux2"
     bins = 100
-    ax1.imshow(div, label=label, vmin=0.99, vmax=1.01)
+    im = ax1.imshow(div, label=label, vmin=args.vmin, vmax=args.vmax, cmap=args.cmap)
+    fig.colorbar(im, label="Normalized count")
      
     ax1.legend()
     plt.savefig(args.out)
@@ -55,6 +56,15 @@ if __name__ == "__main__":
     parser.add_argument(
         "flat2", type=str, 
         help="a raw flat frame")
+    parser.add_argument(
+        "--vmin", type=float, default=0.99,
+        help="Minimum value")
+    parser.add_argument(
+        "--vmax", type=float, default=1.01,
+        help="Maxmimum value")
+    parser.add_argument(
+        "--cmap", type=str, default="coolwarm",
+        help="Color map")
     parser.add_argument(
         "--out", type=str, default="frame_comp.jpg",
         help="Output file")
