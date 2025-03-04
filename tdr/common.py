@@ -253,6 +253,7 @@ def shift_sidereal(flist, stackmode="median"):
     fi0 = flist[0]
     hdu = fits.open(fi0)
     hdr = hdu[0].header
+    # Save shape since some DECam image has unusual shape......
     ny, nx = hdu[0].data.shape
     w = wcs(header=hdr)
     # Central x and y of the first fits in pixel 
@@ -273,8 +274,8 @@ def shift_sidereal(flist, stackmode="median"):
         print(
             f"  fits {idx+1:03d}: (cx, cy) = ({x:.1f}, {y:.1f}), "
             f"(dx, dy) = ({dx:02d}, {dy:02d}) pix")
-
-        # Shift
+         
+        # Check image size
         img = hdu[0].data
         ny0, nx0 = img.shape
         if (ny0 == ny) & (nx0 == nx):
@@ -283,15 +284,12 @@ def shift_sidereal(flist, stackmode="median"):
             # Skip unusual shape (for DECam)
             continue
 
+        # Shift
         tmp = np.roll(img, dy, axis=0)
         print(tmp.shape)
         tmp = np.roll(tmp, dx, axis=1)
         # Save
         cube.append(tmp)
-
-        if idx == 0:
-            # Save shape since some DECam image has unusual shape......
-            ny, nx = tmp.shape
 
     
     if stackmode == "median":
@@ -343,6 +341,9 @@ def shift_nonsidereal(flist, hdr_kwd, target, loc, stackmode="median"):
     # Ending time
     # +60 is necesary for ephemeris with 1min step to avoid 
     #   'ValueError: A value in x_new is above the interpolation range.'
+    # 2024-12-04
+    # Originally the margin was 60 s, but an error happened. 
+    # So I replaced it with 30 mins.
     t1_end = t1_str + datetime.timedelta(minutes=(+30))
     t1_end = datetime.datetime.strftime(t1_end, "%Y-%m-%dT%H:%M:%S.%f")
     print(t1_str)
@@ -359,6 +360,18 @@ def shift_nonsidereal(flist, hdr_kwd, target, loc, stackmode="median"):
 
 
     cube = []
+
+    # First, obtain pixel numbers (for DECam)
+    nx_list, ny_list = [], []
+    for idx, fi in enumerate(flist):
+        # Obtain pixel coordinates of the standard ra and dec (cra0 and cdec0)
+        hdu = fits.open(fi)
+        ny, nx = hdu[0].data.shape
+        nx_list.append(nx)
+        ny_list.append(ny)
+    NX, NY = np.max(nx_list), np.max(ny_list)
+    print(f"NX, NY = {NX}, {NY}")
+
     for idx, fi in enumerate(flist):
         # Obtain pixel coordinates of the standard ra and dec (cra0 and cdec0)
         hdu = fits.open(fi)
@@ -395,11 +408,34 @@ def shift_nonsidereal(flist, hdr_kwd, target, loc, stackmode="median"):
             f"  fits {idx+1:03d}: (cx, cy) = ({x:.1f}, {y:.1f}), "
             f"(dx, dy) = ({dx:02d}, {dy:02d}) pix")
 
+
+        # Check image size
+        img = hdu[0].data
+        ny, nx = img.shape
+        print(f"nx, ny = {nx}, {ny}")
+
+        # Modify unusual shape (for DECam)
+        if ny < NY:
+            # Add dimension
+            len1_arr = np.zeros((1, nx))
+            print(img.shape)
+            print(len1_arr.shape)
+            img = np.append(img, len1_arr, axis=0)
+            ny, nx = img.shape
+        if nx < NX:
+            # Add dimension
+            # Add (ny x 1)
+            len1_arr = np.zeros((ny, 1))
+            img = np.append(img, len1_arr, axis=1)
+
         # Shift
-        tmp = np.roll(hdu[0].data, dy, axis=0)
+        print("Shift")
+        print(img.shape)
+        tmp = np.roll(img, dy, axis=0)
         tmp = np.roll(tmp, dx, axis=1)
         # Save
         cube.append(tmp)
+
 
     if stackmode == "median":
         img_shift = np.median(cube, axis=0)
