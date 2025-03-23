@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 """ 
 Split 3-d fits to 2-d fits while cutting non-sensitive pixels 
