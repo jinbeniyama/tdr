@@ -130,17 +130,26 @@ def main(args):
         t0 = hdr["UTC"] 
         t0_dt = datetime.datetime.strptime(t0, "%Y-%m-%dT%H:%M:%S.%f")
     except:
-        # For new one 2021.08-
-        # GEXP-STR= '2021-10-27T20:10:50.371615' / GPS time at exposure start
         t0 = hdr["GEXP-STR"] 
-        try:
-            t0_dt = datetime.datetime.strptime(t0, "%Y-%m-%dT%H:%M:%S.%f")
 
         # For 2024.02-
-        # in case
-        # GEXP-STR= '1970-01-01T00:00:00' / GPS time at exposure start
-        except:
-            t0_dt = datetime.datetime.strptime(t0, "%Y-%m-%dT%H:%M:%S")
+        # GEXP-STR= 'nop     '           / GPS time at exposure start
+        # e.g., TRCS00542110.fits
+        if t0 == "nop":
+            # Use input datetime (from different bands)
+            t0_dt = datetime.datetime.strptime(args.t0, "%Y-%m-%dT%H:%M:%S.%f")
+        else:
+
+            try:
+                # For 2021.08-
+                # GEXP-STR= '2021-10-27T20:10:50.371615' / GPS time at exposure start
+                t0_dt = datetime.datetime.strptime(t0, "%Y-%m-%dT%H:%M:%S.%f")
+
+            except:
+                # For 2024.02-
+                # in case
+                # GEXP-STR= '1970-01-01T00:00:00' / GPS time at exposure start
+                t0_dt = datetime.datetime.strptime(t0, "%Y-%m-%dT%H:%M:%S")
 
         # Some headers below are not recomended !
         # DATE-OBS= '2021-10-15'         / Observation start date (yyyy-mm-dd)
@@ -246,6 +255,9 @@ if __name__ == "__main__":
     parser.add_argument(
         "--stack", type=int, default=None, 
         help="stacking number")
+    parser.add_argument(
+        "--t0", type=str, default=None, 
+        help="Datetime like 2025-02-23T14:01:36.041742")
     parser.add_argument(
         "--stype", type=str, default="median", 
         help="stacking type")
