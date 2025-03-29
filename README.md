@@ -168,10 +168,17 @@ stackfits.py rTRCS00000010.fits  median
 
 #### 2.2. WSC based stacking
 Do stacking (i.e., make 2-d fits from multiple 2-d fits) using World Coordinate System (WCS).
-I am sorry that you have to prepare corrected fits by yourselves using such as [astrometry.net](https://astrometry.net/)) 
+First we have to prepare corrected fits by ourselves using such as [astrometry.net](https://astrometry.net/)) 
+If you are using Mac and homebrew, just `brew install astrometry-net` will work I think.
+You can download index files  with `wget_astrometrynet_Gaiaindex.sh`.
+Then you can paste WCS with a command e.g.,  
+```
+paste_wcs_tdr.py xxx.fits
+```
+.
+
 Here I assume the corrected fits is like `rTRCS00000010w.fits`.
 Example of resulting images are shown in Figure 1 of [Beniyama et al., 2023, AJ](https://ui.adsabs.harvard.edu/abs/2023AJ....166..229B/abstract).
-
 ```
 [usage]
 # Sidereal mean stacking
