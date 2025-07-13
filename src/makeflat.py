@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """ Make a master flat frame from a 3-d fits
 2 types of normalization, median and mean, are implemented.
