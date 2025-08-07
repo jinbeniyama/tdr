@@ -145,8 +145,8 @@ if __name__ == "__main__":
     # Shift with velocity
     if args.mode == "velocity":
         # Extract header keyword and pixel scale
-        hdr_kwd, p_scale = instinfo(args.inst)
         print(f"Instrument  : {args.inst}")
+        hdr_kwd, p_scale, _ = instinfo(args.inst)
         print(f"Header info : {hdr_kwd}")
         print(f"Pixel scale : {p_scale} arcsec/pixel")
 
