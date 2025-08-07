@@ -163,7 +163,7 @@ if __name__ == "__main__":
         v_ra, v_dec = v_ra/p_scale, v_dec/p_scale
         
         # Shift
-        img_shift = shift_w_velocity(flist, hdr_kwd, v_ra, v_dec)
+        img_shift = shift_w_velocity(flist, hdr_kwd, v_ra, v_dec, args.stackmode)
         # Update header
         hdu[0].header.add_history(
             "[shift2d] (v_ra, v_dec) = ({v_ra}, {v_dec}) pixel/s")

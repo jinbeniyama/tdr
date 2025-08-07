@@ -188,7 +188,7 @@ def obtain_fitstime(flist, hdr_kwd):
     return t_list
 
 
-def shift_w_velocity(flist, hdr_kwd, v_ra, v_dec):
+def shift_w_velocity(flist, hdr_kwd, v_ra, v_dec, stackmode="median"):
     """
     Shift 2d-fits files with velocity in pixel/s.
 
@@ -200,6 +200,9 @@ def shift_w_velocity(flist, hdr_kwd, v_ra, v_dec):
         header keywords
     v_ra, v_dec : float
         velocity in arvsec/pixel
+    stackmode : str, optional
+        stacking mode (median or mean)
+
 
     Return
     ------
@@ -228,7 +231,12 @@ def shift_w_velocity(flist, hdr_kwd, v_ra, v_dec):
         # Save
         cube.append(tmp)
 
-    img_shift = np.median(cube, axis=0)
+    if stackmode == "median":
+        img_shift = np.median(cube, axis=0)
+    elif stackmode == "mean":
+        img_shift = np.mean(cube, axis=0)
+    else:
+        assert False, "Invalid stackmode."
     return img_shift
 
 
