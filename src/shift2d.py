@@ -66,9 +66,9 @@ if __name__ == "__main__":
     parser.add_argument(
         "--second", action="store_true", default=None,
         help="velocity in arcsec/s")
-    parser.add_argument(
-        "--mode", type=str, default="median", 
-        help="Stacking mode")
+    #parser.add_argument(
+    #    "--mode", type=str, default="median", 
+    #    help="Stacking mode")
     # For nonsidereal
     parser.add_argument(
         "--target", type=str, default=None, 
@@ -134,11 +134,24 @@ if __name__ == "__main__":
         print("JD_median and JD_mean are not the same.")
         print("JD_median is saved in the header.")
     
-
-
-    # Open the "middle" fits
-    mid_index = len(flist) // 2
-    fi0 = flist[mid_index]
+    # Important note:
+    # Time is always middle exposure (T). Images are always shifted to the first image.
+    # For "sidereal stacking", wcs info in the "first" fits is saved in the 
+    # output file such that image and wcs are consistent.
+    # For "nonsidereal stacking", wcs info in the "middle" fits is saved in the 
+    # output file such that the moving object is properly location at RA and DEC at T.
+    # (not at exposure starting time!)
+    # I note that if the images are not non-sidereally tracked (or not tracked well), 
+    # this stacking generates wrong wcs info.
+    if args.mode == "sidereal":
+        fi_index = 0
+    elif args.mode == "nonsidereal":
+        fi_index = len(flist) // 2
+    elif args.mode == "velocity":
+        fi_index = len(flist) // 2
+    
+    # Inherit wcs info of this fits file
+    fi0 = flist[fi_index]
 
     hdu = fits.open(fi0)
 
