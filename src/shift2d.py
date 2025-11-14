@@ -4,11 +4,11 @@
 Shift and stack multiple 2d fits files.
 Three modes are available:
 1. velocity (stack simply with pixel coordinates, useful only for quick look maybe)
-    wcs of output fits is the same with the first fits
+    wcs of output fits is the same with the "middle" fits
 2. sidereal (stack with wcs coordinates to raise SNR of 'stars')
-    wcs of output fits is the same with the first fits
+    wcs of output fits is the same with the "middle" fits
 3. nonsidereal (stack with certain velocity to raise SNR of a moving object)
-    wcs of output fits is the same with the first fits
+    wcs of output fits is the same with the "middle" fits
     OBS-TIME is necessary for 3.
     Please check OBS-TIME keyword.
 
@@ -26,6 +26,8 @@ import numpy as np
 import pandas as pd
 from astropy.time import Time
 import datetime
+from astropy.wcs import WCS as wcs
+
 
 from tdr import (
     instinfo, obtain_fitstime, shift_w_velocity, 
@@ -134,9 +136,12 @@ if __name__ == "__main__":
     
 
 
-    # Open the first fits
-    fi0 = flist[0]
+    # Open the "middle" fits
+    mid_index = len(flist) // 2
+    fi0 = flist[mid_index]
+
     hdu = fits.open(fi0)
+
     # Update header
     hdu[0].header.add_history(f"[shift2d] Mode {args.mode}")
     for fi in flist:
@@ -217,7 +222,6 @@ if __name__ == "__main__":
     if inst == "TriCCS":
         hdu[0].header[key_tframe] = t_exp_total
 
-
     if args.out:
         out = args.out
     else:
@@ -225,3 +229,4 @@ if __name__ == "__main__":
         out = f"{str_mode}_{filename}.fits"
     out = os.path.join(outdir, out)
     hdu.writeto(out, overwrite=True)
+
